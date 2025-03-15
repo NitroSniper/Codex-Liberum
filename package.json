@@ -1,0 +1,22 @@
+{
+  "name": "codex",
+  "version": "0.0.0",
+  "description": "Secure and Free",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NitroSniper/Codex-Liberum.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NitroSniper/Codex-Liberum/issues"
+  },
+  "homepage": "https://github.com/NitroSniper/Codex-Liberum#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
