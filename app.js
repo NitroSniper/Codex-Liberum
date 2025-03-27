@@ -4,11 +4,9 @@ const app = express()
 const port = 3000
 
 
-let dots = require("./views/dots")
-
-app.get('/', (req, res) => {
-  res.send(dots.index());
-})
+/* Import Routes */
+var indexRouter = require('./routes/index');
+app.use('/', indexRouter);
 
 
 app.listen(port, () => {
