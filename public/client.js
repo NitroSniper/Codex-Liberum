@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
       titleElem.textContent = post.title;
   
       const infoElem = document.createElement("small");
-      infoElem.textContent = `Category: ${post.category} | Posted on: ${new Date(post.datetime).toLocaleString()}`;
+      infoElem.textContent = `Category: ${post.category} | Posted on: ${new Date(post.dateTime).toLocaleString()}`;
   
       const contentElem = document.createElement("p");
       contentElem.textContent = post.content;

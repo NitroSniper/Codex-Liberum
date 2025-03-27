@@ -16,7 +16,7 @@ const pool = new Pool({
 // get posts from database 
 router.get('/', async (req, res) => { 
     try {
-        const result = await pool.query('SELECT * FROM "Posts" ORDER BY "dateTime" DESC');
+        const result = await pool.query('SELECT * FROM "Post" ORDER BY "dateTime" DESC');
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching posts:', error);
