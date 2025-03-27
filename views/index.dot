@@ -1,10 +1,33 @@
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Page</title>
-    Hello World
+    <title>News Blog - Post Content</title>
+    <meta charset="utf-8">
+    <script src="static/client.js" defer></script>
 </head>
 <body>
+    <header>
+        <h1>Codex-Liberum</h1>
+        <nav>
+            <ul>
+                <!-- <li><a href="index.html">Home</a></li> -->
+                <!-- <li><a href="createPost.html">Create Post</a></li> -->
+                <li><a href="donate.html">Donate</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="postsList">
+          <h2>Latest News Posts</h2>
+          <p>See the latest posts from your fellow users!</p>
+          <div id="search-container">
+            <i class="fa fa-search" aria-hidden="true"></i>
+            <input class="search_bar" id="search" name="search" type="text" placeholder="Search posts...">
+          </div>
+          <!-- Container for dynamic posts -->
+          <div id="posts"></div>
+        </section>
+      </main>
+
 </body>
 </html>

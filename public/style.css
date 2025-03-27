@@ -2,10 +2,10 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    display: flex;
+    /* display: flex; */
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    /* height: 100vh; */
     margin: 0;
 }
 
@@ -75,4 +75,78 @@ body {
 
 .login-btn_login:hover {
     background-color: #3f454b;
+}
+
+
+header {
+    background-color: #000000;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    background-color: #333;
+    padding: 0;
+}
+
+nav ul li {
+    flex: 1;
+}
+
+nav ul li a {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    color: #fff;
+    text-decoration: none;
+}
+
+nav ul li.active a {
+    background-color: #07246e;
+}
+
+#postsList {
+    background-color: #fff;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+}
+
+button {
+    background-color: #7057ff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+#create-post-container{
+    max-width:800px; 
+    margin:20px auto; 
+    background:#fff; 
+    padding:40px; 
+    border-radius:8px; 
+    box-shadow:0 4px 8px rgba(0,0,0,0.1)
 }
