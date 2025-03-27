@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Setting the character encoding, viewport and title of the page -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <!-- Linking the CSS stylesheet for the login page -->
+    <link rel="stylesheet" href="/public/style.css">
+    <!-- Linking the JavaScript file for the login page -->
+    <!-- <script src="/js/login.js"></script> -->
+</head>
+
+<body>
+    <!-- Main container for the login form -->
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Login</h2>
+            <form id="form_id" method="post" action="/login">
+
+                <!-- Input field for the username -->
+                <div class="login-input-group">
+                    <label for="email">Please enter your username*</label>
+                    <input type="email" name="email" id="email" placeholder="Type your username" required />
+                </div>
+
+                <!-- Input field for the password -->
+                <div class="login-input-group">
+                    <label for="password">Please enter your password*</label>
+                    <input type="password" name="familyPassword" id="password" placeholder="Type your password" required />
+                </div>
+
+                <!-- Submit button for the form -->
+                <div class="login-btn_wrapper">
+                    <button class="login-btn_login" type="submit">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
