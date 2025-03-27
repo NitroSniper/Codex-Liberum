@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/NitroSniper/Codex-Liberum#readme",
   "dependencies": {
+    "dot": "^1.1.3",
     "express": "^4.21.2"
   }
 }
