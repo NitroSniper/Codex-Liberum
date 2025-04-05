@@ -9,14 +9,14 @@ services:
 #    ports: # use if it is necessary to expose the container to the host machine
 #      - "3000:3000"
   codex:
-    build: .
+    build: ./codex
     ports: # use if it is necessary to expose the container to the host machine
       - "3000:3000"
 
     develop:
       watch:
         - action: sync+restart
-          path: .
+          path: ./codex
           target: /usr/src/app/
           ignore:
             - node_modules/
