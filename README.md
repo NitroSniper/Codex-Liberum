@@ -6,12 +6,12 @@
 - Install **Docker Desktop** from [Docker’s official website](https://www.docker.com/products/docker-desktop/).
 - Ensure Docker Desktop is running.
 
-### Steps to Run the Application
+### Steps to Run the Application (developer)
 1. **Open Docker Desktop** and ensure it is running.
 2. **Navigate to the project folder** in your terminal or command prompt.
 3. **Start the services** by running:
    ```sh
-   docker-compose up -d
+   docker-compose watch
    ```
    - The `-d` flag runs the containers in the background.
    - This will start the Node.js application (`codex`), PostgreSQL database (`db`), and Adminer (`adminer`).
