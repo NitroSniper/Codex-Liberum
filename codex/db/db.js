@@ -3,7 +3,7 @@ const path = require('node:path');
 const { Pool } = require("pg");
 
 const pool = new Pool({
-    user: 'admin',
+    user: 'prod',
     host: 'db',
     database: 'prod',
     password: 'example',
@@ -37,4 +37,4 @@ const refresh_db = () => {
 
 
 
-module.exports = {refresh_db};
+module.exports = {refresh_db, pool};

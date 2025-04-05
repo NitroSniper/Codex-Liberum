@@ -1,18 +1,8 @@
 services:
-#  dev-codex:
-#    image: "node:23.9.0-slim@sha256:dcacc1ee3b03a497c2096b0084d3a67b856e777b55ffccfcc76bcdab9cc65906"
-#    user: "node"
-#    working_dir: /home/node/app
-#    volumes:
-#      - ./:/home/node/app
-#    command: "npm start"
-#    ports: # use if it is necessary to expose the container to the host machine
-#      - "3000:3000"
   codex:
     build: ./codex
     ports: # use if it is necessary to expose the container to the host machine
       - "3000:3000"
-
     develop:
       watch:
         - action: sync+restart
@@ -32,7 +22,7 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: prod
       POSTGRES_PASSWORD: example
     volumes:
       - pg_data:/var/lib/postgresql/data
