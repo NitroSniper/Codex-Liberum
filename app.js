@@ -67,6 +67,20 @@ app.post('/register', async (req, res) => {
 });
 
 // Start the server
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
+
+
+// Reason - https://cheatsheetseries.owasp.org/cheatsheets/NodeJS_Docker_Cheat_Sheet.html#6-graceful-tear-down-for-your-nodejs-web-applications
+async function closeGraceful(signal) {
+    console.log(`Received signal to terminate: ${signal}`)
+
+    await server.close(() => {
+        console.log("Server terminated.");
+        process.exit(0);
+    });
+}
+
+process.on('SIGINT', closeGraceful);
+process.on('SIGTERM', closeGraceful);

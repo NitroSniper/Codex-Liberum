@@ -24,7 +24,7 @@ const refresh_db = () => {
         const client = await getClient();
         try {
             await client.query("BEGIN");
-            await client.query(data)
+            await client.query(data);
             await client.query("COMMIT");
         } catch (err) {
             await client.query("ROLLBACK")

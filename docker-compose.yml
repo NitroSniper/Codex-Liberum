@@ -1,16 +1,10 @@
-version: "2"
 services:
   codex:
-    image: "node:23.9.0-slim@sha256:dcacc1ee3b03a497c2096b0084d3a67b856e777b55ffccfcc76bcdab9cc65906"
-    user: "node"
-    working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ./:/home/node/app
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports: # use if it is necessary to expose the container to the host machine
       - "3000:3000"
-    command: "npm start"
   db:
     image: postgres
     restart: always
@@ -33,6 +27,6 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - "8080:8080"
 volumes:
   pg_data:

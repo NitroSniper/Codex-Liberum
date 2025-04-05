@@ -1,0 +1,6 @@
+# Reason - https://cheatsheetseries.owasp.org/cheatsheets/NodeJS_Docker_Cheat_Sheet.html#9-keeping-unnecessary-files-out-of-your-nodejs-docker-images
+.dockerignore
+node_modules
+Dockerfile
+.gitignore
+.git
