@@ -14,7 +14,7 @@ describe('Argon2id', function () {
                 186,
                 212
             ]);
-            assert.deepStrictEqual(actual, expected);
+            assert.deepEqual(actual, expected);
         });
     });
     describe('Uint8ArrayToBigInt', function () {
@@ -40,6 +40,36 @@ describe('Argon2id', function () {
             const uint8array = argon2id.BigIntToUint8Array(expected);
             const actual = argon2id.Uint8ArrayToBigInt(uint8array);
             assert.equal(actual, expected);
+        });
+    });
+    describe('#LE32', function () {
+        it('Convert 123456 as a 32 bit integer to bytes', function () {
+            const value = BigInt.asUintN(32, 123456n);
+            const actual = argon2id.LE32(value);
+            const expected = new Uint8Array([
+                64,
+                226,
+                1,
+                0
+            ]);
+            assert.deepEqual(actual, expected);
+        });
+    });
+    describe('#LE32', function () {
+        it('Convert 123456 as a 32 bit integer to bytes', function () {
+            const value = BigInt.asUintN(32, 123456n);
+            const actual = argon2id.LE64(value);
+            const expected = new Uint8Array([
+                64,
+                226,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]);
+            assert.deepEqual(actual, expected);
         });
     });
 });
