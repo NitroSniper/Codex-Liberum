@@ -22,6 +22,8 @@ var indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 var getPostRouter = require('./routes/post');
 app.use('/get-posts', getPostRouter)
+const donateRouter = require('./routes/donate');
+app.use('/donate', donateRouter);
 
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));

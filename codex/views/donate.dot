@@ -1,0 +1,55 @@
+<html lang="en">
+<head>
+    <title>News Blog - Post Content</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <header>
+        <h1>Codex-Liberum</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/donate">Donate</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+    <h2>Donate to Our Site</h2>
+    <form id="donationForm" action="/donate/submit" method="POST">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name" required maxlength="100" placeholder="Your name">
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required maxlength="100" placeholder="Your email">
+        </div>
+        <div>
+            <label for="amount">Donation Amount (minimum 1 pound):</label>
+            <input type="number" name="amount" id="amount" value="10" min="1" required>
+        </div>
+        <!-- Payment Details -->
+        <div>
+          <label for="cardHolder">Cardholder's Name:</label>
+          <input type="text" name="cardHolder" id="cardHolder" required maxlength="100" placeholder="Name on Card">
+        </div>
+        <div>
+          <label for="cardNumber">Card Number:</label>
+          <input type="text" name="cardNumber" id="cardNumber" required placeholder="16-digit card number" pattern="\d{16}">
+        </div>
+        <div>
+          <label for="expiry">Expiry Date:</label>
+          <input type="text" name="expiry" id="expiry" required placeholder="MM/YY">
+        </div>
+        <div>
+          <label for="cvv">CVV:</label>
+          <input type="text" name="cvv" id="cvv" required placeholder="3-digit CVV" pattern="\d{3}">
+        </div>
+        <button type="submit">Donate</button>
+    </form>
+  </main>
+
+</body>
+</html>
+
