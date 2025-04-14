@@ -7,7 +7,7 @@ const app = express()
 const port = 3000
 
 // Importing routes for login & register
-const { registerUser, loginUser } = require('./routes/auth'); 
+const { registerUser, loginUser, sessionMiddleware } = require('./routes/auth'); 
 const { createSession, deleteSession } = require('./routes/session');
 
 dotenv.config();
