@@ -1,6 +1,9 @@
 const crypto = require('crypto');
 const { pool } = require('../db/db');
 
+// getSession from session module
+const { getSession } = require('./session');
+
 // Secret pepper
 const pepper = 'my_secret_pepper'; 
 
@@ -65,4 +68,47 @@ async function loginUser(username, password) {
     }
 }
 
-module.exports = { registerUser, loginUser };
+//Sessions
+async function sessionMiddleware(req, res, next) {
+    try {
+        const token = req.cookies.session_token;
+
+        if (!token) {
+            return handleSessionFail(req, res);
+        }
+
+        const session = await getSession(token);
+
+        if (!session) {
+            return handleSessionFail(req, res);
+        }
+
+        req.userId = session.user_id;
+        next();
+    } catch (error) {
+        console.error('Session middleware error:', error);
+        return handleSessionFail(req, res);
+    }
+}
+
+function handleSessionFail(req, res) {
+    // Check if the request is an API call 
+    if (req.originalUrl.startsWith('/profile') || req.originalUrl.startsWith('/api')) {
+        return res.status(401).json({ message: 'Session expired' });
+    } else {
+        return res.redirect('/login');
+    }
+}
+
+async function getUserById(userId) {
+    const result = await pool.query('SELECT id, username FROM users WHERE id = $1', [userId]);
+    return result.rows[0];
+}
+
+module.exports = {
+    registerUser,
+    loginUser,
+    sessionMiddleware,
+    getUserById
+
+};
