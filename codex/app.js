@@ -98,15 +98,17 @@ app.get('/profile/get-user-profile', sessionMiddleware, async (req, res) => {
 });
 
 // Logout Route
-app.post('/logout', async (req, res) => {
+// Passes userId 
+app.post('/logout', sessionMiddleware, async (req, res) => {
     const token = req.cookies.session_token;
+    const userId = req.userId;
 
     if (!token) {
         return res.status(400).json({ message: 'No session found' });
     }
 
     try {
-        await deleteSession(token);
+        await deleteSession(token, userId);
         res.clearCookie('session_token');
         res.json({ message: 'You have logged out successfully!' });
     } catch (error) {
@@ -114,6 +116,7 @@ app.post('/logout', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 // For undefined routes
 app.use((req, res) => {

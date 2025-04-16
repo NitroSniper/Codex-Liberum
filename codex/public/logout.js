@@ -1,4 +1,4 @@
-//This was created to test the session token expiry stuff 
+//This was created to test the session token expiry 
 //For the logoutbtn 
 document.addEventListener('DOMContentLoaded', async () => {
     const logoutBtn = document.getElementById('logoutBtn');

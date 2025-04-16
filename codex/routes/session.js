@@ -30,11 +30,14 @@ async function getSession(token) {
     return result.rows[0];
 }
 
-
-async function deleteSession(token) {
-    await pool.query(`DELETE FROM sesh WHERE session_token = $1`, [token]);
-}
-
+// Delete the session only if it belongs to the currently logged in user
+async function deleteSession(token, userId) {
+    await pool.query(
+      `DELETE FROM sesh WHERE session_token = $1 AND user_id = $2`,
+      [token, userId]
+    );
+  }
+  
 
 
 module.exports = {
