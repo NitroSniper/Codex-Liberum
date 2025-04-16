@@ -8,8 +8,8 @@ function generateSessionToken() {
 async function createSession(userId, maxAgeMinutes = 15) {
     const token = generateSessionToken();
     //Time the session token expires at
-    const expiresAt = new Date(Date.now() + maxAgeMinutes * 60 * 1000); //what we can use - 15mins
-    //const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // 1 minute from now - test purposes
+    //const expiresAt = new Date(Date.now() + maxAgeMinutes * 60 * 1000); //what we can use - 15mins
+    const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // 1 minute from now - test purposes
     //const expiresAt = new Date(Date.now() + (1 * 60 + 10) * 60 * 1000); // 1 hour + 10 minutes - test purposes
 
 
@@ -30,9 +30,12 @@ async function getSession(token) {
     return result.rows[0];
 }
 
+
 async function deleteSession(token) {
     await pool.query(`DELETE FROM sesh WHERE session_token = $1`, [token]);
 }
+
+
 
 module.exports = {
     createSession,
