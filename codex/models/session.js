@@ -39,7 +39,6 @@ async function deleteSession(token, userId) {
   }
   
 
-
 module.exports = {
     createSession,
     getSession,

@@ -1,6 +1,6 @@
 const express = require('express');
 const { pool } = require('../db/db');  
-const { sessionMiddleware } = require('./auth'); 
+const { sessionMiddleware } = require('../models/auth'); 
 const router = express.Router();
 
 router.get('/get-user-profile', sessionMiddleware, async (req, res) => {
