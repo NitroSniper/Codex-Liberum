@@ -8,7 +8,8 @@ const port = 3000
 
 // Importing routes for login & register
 const { registerUser, loginUser, sessionMiddleware } = require('./models/auth'); 
-const { createSession, deleteSession } = require('./models/session');
+//const { createSession, deleteSession } = require('./models/session'); -- only if we want deleteSession
+const { createSession } = require('./models/session');
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
+
 // Register Route
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -107,7 +109,7 @@ app.post('/logout', sessionMiddleware, async (req, res) => {
     }
 
     try {
-        await deleteSession(token, userId);
+        //await deleteSession(token, userId);
         res.clearCookie('session_token');
         res.json({ message: 'You have logged out successfully!' });
     } catch (error) {

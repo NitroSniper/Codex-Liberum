@@ -15,7 +15,7 @@ CREATE TABLE sesh (
     user_id INTEGER REFERENCES users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_active TIMESTAMP,
-    expires_at TIMESTAMP
+    expires_at TIMESTAMP 
 );
 
 
