@@ -27,7 +27,7 @@
         </div>
         <div>
             <label for="amount">Donation Amount (minimum 1 pound):</label>
-            <input type="number" name="amount" id="amount" value="10" min="1" required>
+            <input type="number" name="amount" id="amount" value="1" min="1" required>
         </div>
         <!-- Payment Details -->
         <div>

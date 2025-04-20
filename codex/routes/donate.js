@@ -1,22 +1,7 @@
 const express = require('express');
 const router = express.Router();
 let dots = require("../views/dots")
-
-// sanitise the user input 
-/*
-*****still not sure about this process********
-*/
-function sanitizeInput(input) {
-  return input.replace(/[<>&'"]/g, (c) => {
-    return {
-      '<': '&lt;',
-      '>': '&gt;',
-      '&': '&amp;',
-      "'": '&#39;',
-      '"': '&quot;'
-    }[c];
-  });
-}
+const { pool } = require('../db/db');
 
 // load the donation page
 router.get('/', (req, res) => {
@@ -24,7 +9,7 @@ router.get('/', (req, res) => {
 });
 
 // a route to handle donation submission
-router.post('/submit', (req, res) => {
+router.post('/submit', async (req, res) => {
 try {
     const { name, email, amount, cardHolder, cardNumber, expiry, cvv } = req.body;
 
@@ -60,19 +45,54 @@ try {
 
     // check if the card has expired
     if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
-      return res.status(400).send('The expiry date of your card has passed, please try again on a new card');
+      return res.status(400).send(`
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <h3>Payment Error</h3>
+            <p>The expiry date of your card has passed.</p>
+            <p><a href="/donate">Go back to the donation page</a></p>
+            <p><a href="/">Go to index page</a></p>
+          </body>
+        </html>
+      `);
     }
 
-    // sanitise input to prevent XSS when displaying data back to the user
-    const safeName = sanitizeInput(name);
+    // save data onto database
+    const transactionId = `tID-${Math.floor(Math.random() * 1e6)}`;
+    console.log('About to INSERT donation:', { transactionId, name, email, amount});
+    await pool.query(
+      `INSERT INTO donations (transaction_id, name, email, amount)
+       VALUES ($1, $2, $3, $4)`,
+      [transactionId, name, email, amount]
+    );
+    // redirect
+    res.redirect(`/donate/submit?tx=${encodeURIComponent(transactionId)}`);
 
-    // process the donation and show a succesful message if succeed
-    const transactionId = `tID-${Math.floor(Math.random() * 1000000)}`;
-    res.send(`Transaction ID: ${transactionId}. Thank you for supporting us, ${safeName}!`);
   } catch (err) {
     console.error('Error during donation processing:', err);
     res.status(500).send('Payment processing failed.');
   }
 });
+
+// show a success page after submit the donation
+router.get('/submit', (req, res) => {
+  const { tx, name } = req.query;
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>Codex-Liberum - sucessful donation</title>
+    </head>
+    <body>
+      <h3>Thank you for supporting us!</h3>
+      <p>Your transaction ID is: <strong>${tx}</strong></p>
+      <p><a href="/">Go to index page</a></p>
+    </body>
+    </html>
+  `);
+});
+
 
 module.exports = router;
