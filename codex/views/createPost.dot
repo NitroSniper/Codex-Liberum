@@ -1,0 +1,50 @@
+<html lang="en">
+<head>
+    <title>News Blog - Create Post</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <header>
+        <h2>Create a post</h2>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <form action="/create-post/submit" method="POST" enctype="multipart/form-data">
+            <div>
+              <label for="title">Title:</label>
+              <input id="title" name="title" type="text" required maxlength="255">
+            </div>
+            <div>
+              <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                  <option value="">— Select a category —</option>
+                  <option value="scienceTech">Science & Technology</option>
+                  <option value="sports">Sports</option>
+                  <option value="health">Health</option>
+                  <option value="environment">Environment</option>
+                  <option value="politics">Politics</option>
+                  <option value="artsMusic">Arts & Music</option>
+                  <option value="weather">Weather</option>
+                  <option value="travel">Travel</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>              
+            <div>
+              <label for="content">Content:</label>
+              <textarea id="content" name="content" rows="20" required></textarea>
+            </div>
+            <div>
+            <label>Photo (optional):</label>
+            <input name="photo" type="file" accept="image/jpeg,image/png,image/gif">
+            <small>Max 2 MB; JPG/PNG/GIF only.</small>
+            </div>
+            <button type="submit">Publish</button>
+          </form>
+    </main>
+</body>
+</html>

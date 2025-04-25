@@ -2,7 +2,7 @@
 <head>
     <title>News Blog - Post Content</title>
     <meta charset="utf-8">
-    <script src="static/client.js" defer></script>
+    <script src="/client.js" defer></script>
 </head>
 <body>
     <header>

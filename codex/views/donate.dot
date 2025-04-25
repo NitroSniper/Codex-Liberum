@@ -1,15 +1,14 @@
 <html lang="en">
 <head>
-    <title>News Blog - Post Content</title>
+    <title>News Blog - Donation</title>
     <meta charset="utf-8">
 </head>
 <body>
     <header>
-        <h1>Codex-Liberum</h1>
+        <h1>News Blog</h1>
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/donate">Donate</a></li>
             </ul>
         </nav>
     </header>

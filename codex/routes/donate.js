@@ -77,7 +77,7 @@ try {
 
 // show a success page after submit the donation
 router.get('/submit', (req, res) => {
-  const { tx, name } = req.query;
+  const { tx } = req.query;
   res.send(`
     <!DOCTYPE html>
     <html lang="en">

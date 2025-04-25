@@ -29,16 +29,28 @@ document.addEventListener("DOMContentLoaded", function() {
       // Use textContent to avoid injection
       const titleElem = document.createElement("h3");
       titleElem.textContent = post.title;
-  
-      const infoElem = document.createElement("small");
-      infoElem.textContent = `Category: ${post.category} | Posted on: ${new Date(post.dateTime).toLocaleString()}`;
-  
+
+      // if (post.image_url) {
+      //   const imgElem = document.createElement("img");
+      //   imgElem.src    = post.image_url;
+      //   imgElem.alt    = `Image for ${post.title}`;
+      //   // fix size
+      //   imgElem.style.maxWidth  = '200px';
+      //   imgElem.style.height    = 'auto';
+      //   imgElem.style.display   = 'block';
+      //   imgElem.style.marginBottom = '0.5em';
+      // }
+
       const contentElem = document.createElement("p");
       contentElem.textContent = post.content;
-  
+      
+      const infoElem = document.createElement("small");
+      infoElem.textContent = `Category: ${post.category} | Posted on: ${new Date(post.created).toLocaleString()}`;
+
       postDiv.appendChild(titleElem);
-      postDiv.appendChild(infoElem);
+      // postDiv.appendChild(imgElem);
       postDiv.appendChild(contentElem);
+      postDiv.appendChild(infoElem);
       postsContainer.appendChild(postDiv);
     });
   }

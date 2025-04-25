@@ -5,9 +5,10 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const app = express()
 const port = 3000
+const multer = require('multer');
 
 // Importing routes for login & register
-const { registerUser, loginUser, sessionMiddleware } = require('./models/auth'); 
+const { registerUser, loginUser, sessionMiddleware } = require('./models/auth');
 //const { createSession, deleteSession } = require('./models/session'); -- only if we want deleteSession
 const { createSession } = require('./models/session');
 
@@ -20,6 +21,58 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// set a multer destination and filename
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'public', 'uploads'));
+        // cb(null, 'public/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, new Date().valueOf() + '_' + file.originalname);
+    }
+});
+
+
+const upload = multer({
+    dest:'./public/uploads'
+});
+
+app.post('/stats', upload.single('uploaded_file'), function (req, res) {
+    // req.file is the name of your file in the form above, here 'uploaded_file'
+    // req.body will hold the text fields, if there were any 
+    console.log(req.file, req.body)
+  });
+
+
+// to check the extension and MIME type as well as the file size limit
+// const upload = multer({
+//     storage,
+//     fileFilter: (req, file, cb) => {
+//         const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+//         const allowedExts = ['.jpg', '.jpeg', '.png', '.gif'];
+//         const ext = path.extname(file.originalname).toLowerCase();
+
+//         if (!allowedExts.includes(ext)) {
+//             return cb(new Error('Only JPG, PNG & GIF are allowed'), false);
+//         }
+//         if (!allowedMimes.includes(file.mimetype)) {
+//             return cb(new Error('Invalid MIME type'), false);
+//         }
+//         cb(null, true);
+//     },
+//     limits: { fileSize: 2 * 1024 * 1024 } // 2MB
+// });
+
+
+// const upload = multer({
+//     dest:'uploads/'
+// })
+
+app.use('/uploads',
+    express.static(path.join(__dirname, 'public', 'uploads'))
+);
+
+
 /* Import Routes */
 var indexRouter = require('./routes/index');
 app.use('/', indexRouter);
@@ -29,6 +82,8 @@ const donateRouter = require('./routes/donate');
 app.use('/donate', donateRouter);
 const profileRouter = require('./routes/profile'); // for user profile routes
 app.use('/profile', profileRouter);
+const createPost = require('./routes/createPost');
+app.use('/create-post', createPost(upload));
 
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
@@ -41,6 +96,10 @@ app.get('/register', (req, res) => {
 app.get('/dashboard', sessionMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
+// app.get('/create-post', sessionMiddleware, (req, res) => {
+//     res.sendFile(path.join(__dirname, 'views', 'createPost.html'));
+// });
+
 
 
 // Login Route
