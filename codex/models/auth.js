@@ -106,9 +106,11 @@ async function getUserById(userId) {
 }
 
 module.exports = {
+    generateSalt,
+    hashPassword,
+    verifyPassword,
     registerUser,
     loginUser,
     sessionMiddleware,
     getUserById
-
 };

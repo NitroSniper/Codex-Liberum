@@ -5,12 +5,14 @@ CREATE TABLE posts (
     category VARCHAR(100) NOT NULL DEFAULT 'uncategorised',
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     hashed_password TEXT NOT NULL,
     salt TEXT NOT NULL
 );
+
 CREATE TABLE sesh (
     session_token TEXT PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),

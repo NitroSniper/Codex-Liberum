@@ -8,7 +8,7 @@ class Argon2id {
     constructor(argon) {
         this.p = null; // password
         this.s = null; // salt
-        new 
+        //new 
     }
 
     /**
