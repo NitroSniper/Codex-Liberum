@@ -3,7 +3,8 @@ CREATE TABLE posts (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     category VARCHAR(100) NOT NULL DEFAULT 'uncategorised',
-    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    image_url TEXT NULL
 );
 
 CREATE TABLE users (
