@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News blog - Dashboard</title>
     <script src="/client.js" defer></script>
+    <script src="/verified.js" defer></script>
+
 </head>
 <body>
     <header>
     <h2>Dashboard</h2>
     <nav>
         <ul>
-            <li><a href="/create-post">Create Post</a></li>
+          <li id="createPostLink" style="display:none;">
+            <a href="/create-post">Create Post</a>
         </ul>
     </nav>
     <button id="logoutBtn">Logout</button>

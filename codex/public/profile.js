@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    //FETCH USER PROFILE
+    // Fetch the user profile
     async function fetchUserProfile() {
         const response = await fetch('/profile/get-user-profile');
-    
+
         if (response.status === 401) {
             // Session expired or not logged in
             if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-            window.location.href = '/login';  // Redirect to login page if session is expired
+                window.location.href = '/login';  // Redirect to login page if session is expired
             }
         } else {
             const data = await response.json();

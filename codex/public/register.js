@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');
 
-    // REGISTER FORM
+    // Register form
     // Handle Register Form Submission - similar to login form
     if (registerForm) {
         registerForm.onsubmit = async function (event) {

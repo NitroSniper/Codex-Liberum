@@ -9,8 +9,8 @@ const multer = require('multer');
 
 // Importing routes for login & register
 const { registerUser, loginUser, sessionMiddleware } = require('./models/auth');
-//const { createSession, deleteSession } = require('./models/session'); -- only if we want deleteSession
 const { createSession } = require('./models/session');
+
 
 dotenv.config();
 
@@ -84,6 +84,8 @@ const profileRouter = require('./routes/profile'); // for user profile routes
 app.use('/profile', profileRouter);
 const createPost = require('./routes/createPost');
 app.use('/create-post', createPost(upload));
+const moderatorRoutes = require('./routes/moderator');
+app.use('/moderator', moderatorRoutes);
 
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
@@ -100,30 +102,44 @@ app.get('/dashboard', sessionMiddleware, (req, res) => {
 //     res.sendFile(path.join(__dirname, 'views', 'createPost.html'));
 // });
 
+app.get('/moderator', sessionMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'moderator.html'));
+});
 
-
-// Login Route
+// Login Route 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    try {
-        const result = await loginUser(username, password);
-        if (!result.success) return res.status(401).json({ message: 'Invalid credentials' });
 
-        const { token, expiresAt } = await createSession(result.userId);
+    try {
+        const loginResult = await loginUser(username, password);
+
+        if (!loginResult.success) {
+            return res.status(401).json({
+                success: false,
+                message: loginResult.message || 'Invalid credentials',
+            });
+        }
+
+        // Create session token and set cookie
+        const { token, expiresAt } = await createSession(loginResult.userId);
 
         res.cookie('session_token', token, {
             httpOnly: true,
             sameSite: 'Strict',
-            maxAge: 15 * 60 * 1000
+            maxAge: 15 * 60 * 1000,
         });
 
-        res.json({ message: 'You are logged in!' });
+        res.json({
+            success: true,
+            message: 'Login successful!',
+            ismoderator: loginResult.ismoderator,
+        });
+
     } catch (error) {
         console.error('Error during login route:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
-
 
 // Register Route
 app.post('/register', async (req, res) => {
@@ -142,20 +158,32 @@ app.post('/register', async (req, res) => {
     }
 });
 
+
 app.get('/profile/get-user-profile', sessionMiddleware, async (req, res) => {
-    try {
-        const user = await getUserById(req.userId); // req.userId was set in the session middleware
+  try {
+    const result = await pool.query(
+      `SELECT 
+         id,
+         username,
+        isverified,
+        ismoderator
+       FROM users
+       WHERE id = $1`,
+      [req.userId]
+    );
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        res.json(user);
-    } catch (error) {
-        console.error('Error fetching user profile:', error);
-        res.status(500).json({ message: 'Internal server error' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
     }
+
+    // return the full row
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
 
 // Logout Route
 // Passes userId 
@@ -168,7 +196,6 @@ app.post('/logout', sessionMiddleware, async (req, res) => {
     }
 
     try {
-        //await deleteSession(token, userId);
         res.clearCookie('session_token');
         res.json({ message: 'You have logged out successfully!' });
     } catch (error) {

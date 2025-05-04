@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moderator Dashboard</title>
+</head>
+<body>
+    <h1>Unverified Journalists</h1>
+    <ul id="userList"></ul>
+
+    <script>
+        async function fetchUnverifiedUsers() {
+            try {
+                const res = await fetch('/moderator/unverified-users', {
+                    credentials: 'include'
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+
+                const data = await res.json();
+                console.log("Fetched unverified users:", data); 
+
+                const list = document.getElementById('userList');
+                list.innerHTML = '';
+
+                if (!data.users || !Array.isArray(data.users)) {
+                    console.warn('Unexpected response structure:', data);
+                    return;
+                }
+
+                data.users.forEach(user => {
+                    const li = document.createElement('li');
+                    li.textContent = user.username + ' ';
+
+                    const btn = document.createElement('button');
+                    btn.textContent = 'Verify';
+                    btn.onclick = async () => {
+                        try {
+                            await fetch('/moderator/verify-user', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include', 
+                                body: JSON.stringify({ userId: user.id }),
+                            });
+
+                            fetchUnverifiedUsers(); 
+                        } catch (verifyErr) {
+                            console.error('Error verifying user:', verifyErr);
+                            alert('Error verifying user: ' + verifyErr.message);
+                        }
+                    };
+
+                    li.appendChild(btn);
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching unverified users:', error);
+                alert('Error loading users: ' + error.message);
+            }
+        }
+
+        fetchUnverifiedUsers();
+    </script>
+</body>
+</html>

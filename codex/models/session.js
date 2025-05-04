@@ -25,26 +25,17 @@ async function createSession(userId, maxAgeMinutes = 15) {
 
 async function getSession(token) {
     const result = await pool.query(`
-        SELECT * FROM sesh
-        WHERE session_token = $1 AND expires_at > NOW()
+        SELECT s.*, u."ismoderator"
+        FROM sesh s
+        JOIN users u ON s.user_id = u.id
+        WHERE s.session_token = $1 AND s.expires_at > NOW()
     `, [token]);
 
-    return result.rows[0];
+    return result.rows[0]; // includes session data + u."ismoderator"
 }
 
-/*
-// Delete the session only if it belongs to the currently logged in user
-async function deleteSession(token, userId) {
-    await pool.query(
-      `DELETE FROM sesh WHERE session_token = $1 AND user_id = $2`,
-      [token, userId]
-    );
-  }
-  */
-
 module.exports = {
-    generateSessionToken,
     createSession,
-    getSession
+    getSession,
     //deleteSession
 };
