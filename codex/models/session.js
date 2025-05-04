@@ -31,7 +31,7 @@ async function getSession(token) {
         WHERE s.session_token = $1 AND s.expires_at > NOW()
     `, [token]);
 
-    return result.rows[0]; // includes session data + u."ismoderator"
+    return result.rows[0]; 
 }
 
 module.exports = {

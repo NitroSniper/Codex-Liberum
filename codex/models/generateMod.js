@@ -24,7 +24,7 @@ const salt = generateSalt();
 const hashedPassword = hashPassword(password, salt);
 
 
-console.log('Use the following values for manual SQL insert:');
+console.log('Use the following values for manual insert into users table:');
 console.log('Username:', username);
 console.log('Salt:', salt);
 console.log('Hashed Password:', hashedPassword);

@@ -138,6 +138,8 @@ module.exports = {
     registerUser,
     loginUser,
     sessionMiddleware,
-    getUserById
-
+    getUserById,
+    hashPassword,
+    generateSalt,
+    verifyPassword
 };
