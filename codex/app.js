@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const app = express()
 const port = 3000
 const multer = require('multer');
+const morgan = require('morgan');
 
 // Importing routes for login & register
 const { registerUser, loginUser, sessionMiddleware } = require('./models/auth');
@@ -72,6 +73,11 @@ app.post('/stats', upload.single('uploaded_file'), function (req, res) {
 app.use('/uploads',
     express.static(path.join(__dirname, 'public', 'uploads'))
 );
+
+
+// HTTPS logging
+
+app.use(morgan('combined'))
 
 
 /* Import Routes */
