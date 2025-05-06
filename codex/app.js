@@ -7,9 +7,9 @@ const port = 3000
 const multer = require('multer');
 const morgan = require('morgan');
 
+const { sessionMiddleware } = require('./models/auth');
+
 // Importing routes for login & register
-const { registerUser, loginUser, sessionMiddleware } = require('./models/auth');
-const { createSession } = require('./models/session');
 
 
 
@@ -108,57 +108,6 @@ app.get('/moderator', sessionMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'moderator.html'));
 });
 
-// Login Route 
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const loginResult = await loginUser(username, password);
-
-        if (!loginResult.success) {
-            return res.status(401).json({
-                success: false,
-                message: loginResult.message || 'Invalid credentials',
-            });
-        }
-
-        // Create session token and set cookie
-        const { token, expiresAt } = await createSession(loginResult.userId);
-
-        res.cookie('session_token', token, {
-            httpOnly: true,
-            sameSite: 'Strict',
-            maxAge: 15 * 60 * 1000,
-        });
-
-        res.json({
-            success: true,
-            message: 'Login successful!',
-            ismoderator: loginResult.ismoderator,
-        });
-
-    } catch (error) {
-        console.error('Error during login route:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
-
-// Register Route
-app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const result = await registerUser(username, password);
-        if (result.success) {
-            res.json({ message: 'You have registered successfully!' });
-        } else {
-            res.status(400).json({ message: 'Error registering user' });
-        }
-    } catch (error) {
-        console.error('Error during registration:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
 
 
 app.get('/profile/get-user-profile', sessionMiddleware, async (req, res) => {
