@@ -6,27 +6,39 @@
     <link rel="stylesheet" href="css/pico.min.css">
 </head>
 <body>
-    <header>
-        <h1>Codex-Liberum</h1>
+    <header class="container">
         <nav>
-            <ul>
-                <li><a href="/auth/login">Login</a></li>
-                <li><a href="/auth/register">Register</a></li>
-                <li><a href="/donate">Donate</a></li>
-            </ul>
+          <ul>
+            <li><h1><strong>Codex Liberum</h1></li>
+            <li><small>Free for all</small></li>
+          </ul>
+          <ul>
+            <li><a href="/auth/login" class="contrast">Login</a></li>
+            <li><a href="/auth/register" class="contrast">Register</a></li>
+            <li><button href="/donate" class="secondary">Donate</button></li>
+          </ul>
         </nav>
     </header>
 
-    <main>
+    <main class="container">
+        <blockquote >
+        “Withholding information is the essence of tyranny.
+        Control of the flow of information is the tool of the
+        dictatorship.”
+          <footer>
+            <cite> - Bruce Coville</cite>
+          </footer>
+        </blockquote>
         <section id="postsList">
           <h2>Latest News Posts</h2>
           <p>See the latest posts from your fellow users!</p>
-          <div id="search-container">
-            <i class="fa fa-search" aria-hidden="true"></i>
-            <input class="search_bar" id="search" name="search" type="text" placeholder="Search posts...">
-          </div>
+          <form role="search">
+            <input type="search" placeholder="Search the Codex">
+            <button type="submit" aria-busy="true">Search</button>
+          </form>
           <!-- Container for dynamic posts -->
-          <div id="posts"></div>
+
+          <div class="grid" id="posts"></div>
         </section>
       </main>
 </body>
