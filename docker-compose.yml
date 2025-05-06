@@ -31,6 +31,7 @@ services:
     restart: always
 #    ports:
 #      - "8080:8080"
+  # An industry standard secure server recommended by experts which we use as a reverse proxy with HTTPS
   caddy:
     image: caddy:2.10.0-alpine
     restart: unless-stopped
