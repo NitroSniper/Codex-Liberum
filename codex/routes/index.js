@@ -3,7 +3,7 @@ const router = express.Router();
 let dots = require("../views/dots")
 /* GET home page. */
 router.get('/', (req, res) => {
-  res.send(dots.index());
+  res.send(dots.layout());
 })
 
 module.exports = router;

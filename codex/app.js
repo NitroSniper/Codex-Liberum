@@ -15,6 +15,9 @@ const { createSession } = require('./models/session');
 dotenv.config();
 
 app.use(express.static(path.join(__dirname, 'public')));
+// Define routes that are public
+app.use("css", express.static(path.join(__dirname, 'public', 'css')));
+
 
 // For parsing JSON and form data
 app.use(bodyParser.json());

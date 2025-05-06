@@ -1,0 +1,11 @@
+<html lang="en">
+<head>
+    <title>News Blog - Post Content</title>
+    <meta charset="utf-8">
+    <script src="/client.js" defer></script>
+    <link rel="stylesheet" href="css/pico.min.css">
+</head>
+<body>
+    Hello World
+</body>
+</html>
