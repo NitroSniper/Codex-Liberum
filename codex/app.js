@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const app = express()
 const port = 3000
@@ -12,7 +11,6 @@ const { registerUser, loginUser, sessionMiddleware } = require('./models/auth');
 const { createSession } = require('./models/session');
 
 
-dotenv.config();
 
 app.use(express.static(path.join(__dirname, 'public')));
 // Define routes that are public
@@ -89,14 +87,9 @@ const createPost = require('./routes/createPost');
 app.use('/create-post', createPost(upload));
 const moderatorRoutes = require('./routes/moderator');
 app.use('/moderator', moderatorRoutes);
+const authentication = require('./routes/authentication');
+app.use('/auth', authentication);
 
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login.html'));
-});
-
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'register.html'));
-});
 
 app.get('/dashboard', sessionMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));

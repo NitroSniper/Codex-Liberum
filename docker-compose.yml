@@ -1,8 +1,8 @@
 services:
   codex:
     build: ./codex
-    ports: # use if it is necessary to expose the container to the host machine
-      - "3000:3000"
+#    ports: # use if it is necessary to expose the container to the host machine
+#      - "3000:3000"
     develop:
       watch:
         - action: sync+restart
@@ -29,7 +29,22 @@ services:
   adminer:
     image: adminer
     restart: always
+#    ports:
+#      - "8080:8080"
+  caddy:
+    image: caddy:2.10.0-alpine
+    restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./site:/srv
+#      - caddy_data:/data
+#      - caddy_config:/config
+
 volumes:
   pg_data:
+#  caddy_data:
+#  caddy_config:
