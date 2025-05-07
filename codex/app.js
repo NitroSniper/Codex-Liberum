@@ -16,6 +16,7 @@ const { sessionMiddleware } = require('./models/auth');
 app.use(express.static(path.join(__dirname, 'public')));
 // Define routes that are public
 app.use("css", express.static(path.join(__dirname, 'public', 'css')));
+app.use("js", express.static(path.join(__dirname, 'public', 'js')));
 
 
 // For parsing JSON and form data
