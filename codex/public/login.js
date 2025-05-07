@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Parse JSON from the server
                 const data = await response.json();
+                console.log(data)
                 alert(data.message);
 
                 // Redirect based on user role

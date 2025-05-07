@@ -4,43 +4,47 @@
     <meta charset="utf-8">
     <script type="text/javascript" src="/js/doT.js"></script>
     <script src="/clients.js" defer></script>
-    <link rel="stylesheet" href="css/pico.min.css">
+    <link rel="stylesheet" href="/css/pico.min.css">
 </head>
 <body>
-    <header class="container">
-        <nav>
-          <ul>
-            <li><h1><strong>Codex Liberum</h1></li>
-            <li><small>Free for all</small></li>
-          </ul>
-          <ul>
+<header class="container">
+    <nav>
+        <a href="/">
+            <ul>
+                <li><h1><strong>Codex Liberum</strong></h1></li>
+                <li><i><small>Free for all</small></i></li>
+            </ul>
+        </a>
+        <ul>
             <li><a href="/auth/login" class="contrast">Login</a></li>
             <li><a href="/auth/register" class="contrast">Register</a></li>
-            <li><button href="/donate" class="secondary">Donate</button></li>
-          </ul>
-        </nav>
-    </header>
+            <li>
+                <button href="/donate" class="secondary">Donate</button>
+            </li>
+        </ul>
+    </nav>
+</header>
 
-    <main class="container">
-        <blockquote >
+<main class="container">
+    <blockquote>
         “Withholding information is the essence of tyranny.
         Control of the flow of information is the tool of the
         dictatorship.”
-          <footer>
+        <footer>
             <cite> - Bruce Coville</cite>
-          </footer>
-        </blockquote>
-        <section id="postsList">
-          <h2>Latest News Posts</h2>
-          <p>See the latest posts from your fellow users!</p>
-          <form id="search" role="search" onsubmit="search_form(event)">
+        </footer>
+    </blockquote>
+    <section id="postsList">
+        <h2>Latest News Posts</h2>
+        <p>See the latest posts from your fellow users!</p>
+        <form id="search" role="search" onsubmit="search_form(event)">
             <input name="query" type="search" placeholder="Search the Codex">
             <button type="submit">Search</button>
-          </form>
-          <!-- Container for dynamic posts -->
+        </form>
+        <!-- Container for dynamic posts -->
 
-          <div class="grid grid-3" id="posts"></div>
-        </section>
-      </main>
+        <div class="grid grid-3" id="posts"></div>
+    </section>
+</main>
 </body>
 </html>

@@ -4,17 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script type="text/javascript" src="/js/doT.js"></script>
+    <script src="/clients.js" defer></script>
+    <link rel="stylesheet" href="/css/pico.min.css">
 </head>
 <body>
+<header class="container">
+    <nav>
+        <a href="/">
+            <ul>
+                <li><h1><strong>Codex Liberum</strong></h1></li>
+                <li><i><small>Free for all</small></i></li>
+            </ul>
+        </a>
+        <ul>
+            <li><a href="/auth/login" class="secondary">Login</a></li>
+            <li><a href="/auth/register" class="contrast">Register</a></li>
+            <li>
+                <button href="/donate" class="contrast">Donate</button>
+            </li>
+        </ul>
+    </nav>
+    <dialog id="welcomeDialog">
+        <article>
+            <header>
+                <button aria-label="Close" onclick="welcomeDialog.close()" rel="prev"></button>
+                <p>
+                    <strong>🗓️ You have Logged In!</strong>
+                </p>
+            </header>
+            <p>
+                <strong>Welcome to Codex Liberum. <br></strong>
+                You are now entering a secure platform dedicated to transparency and the free flow of information. Here,
+                your commitment to truth and accountability finds a powerful ally. Please handle all materials with
+                care,
+                verify sources rigorously, and remember: the integrity of your work protects those who risk everything
+                to
+                share the truth.
+            </p>
+        </article>
+    </dialog>
+</header>
+<main class="container" style="max-width:500px">
     <h2>Login</h2>
-    <form id="loginForm">
+    <form id="loginForm" onsubmit="login_form(event)">
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-
-    <script src="/login.js"></script>
-    <script src="/profile.js"></script>
-    <li><a href="/">Home</a></li>
+</main>
 </body>
 </html>
