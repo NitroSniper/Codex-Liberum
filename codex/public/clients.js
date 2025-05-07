@@ -1,4 +1,3 @@
-
 function ignore_form(func) {
     return function(event) {
         event.preventDefault()
@@ -7,23 +6,34 @@ function ignore_form(func) {
     }
 }
 
-
 async function populate_posts(formData) {
-    console.log(formData);
-    console.log("process");
+    const name = formData.get("query");
+    await fetch_thumbnails(name, 4)
+}
+
+async function fetch_thumbnails(name, amount) {
     const render_article = doT.template(`
     {{~ it.posts :p}}
         <article>
             <header>
                 <img src="https://wallpaperaccess.com/full/343619.jpg" alt="Lamp" style="width:100%">
             </header>
-            <p>{{=p.body}}</p>
-            <footer><small>By IDK</small></footer>
+            <p>{{=p.title}}</p>
+            <footer><small>By {{=p.username}}</small></footer>
         </article>
     {{~}}
     `);
-    const postsContainer = document.getElementById("posts");
-    postsContainer.innerHTML = render_article({posts: [{body: 'with doT'}, {body: 'by Foo'}]});
+    const response = await fetch('/post/get-posts?' + new URLSearchParams({
+        name: name,
+        amount: amount,
+    }).toString())
+    const posts = await response.json();
+    postsContainer.innerHTML = render_article({posts: posts});
+}
+
+const postsContainer = document.getElementById("posts");
+if (postsContainer) {
+    fetch_thumbnails("", 4)
 }
 
 const search_form = ignore_form(populate_posts)

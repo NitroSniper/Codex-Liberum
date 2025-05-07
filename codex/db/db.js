@@ -11,7 +11,15 @@ const pool = new Pool({
 })
 
 const getClient = async () => {
-    return pool.connect()
+    return pool.connect();
+}
+
+const query = async (text, params) => {
+    const start = Date.now();
+    const res = pool.query(text, params);
+    const duration = Date.now() - start;
+    console.log("executed query", {text, params, rows: res.rows});
+    return res;
 }
 
 const refresh_db = () => {
@@ -37,4 +45,4 @@ const refresh_db = () => {
 
 
 
-module.exports = {refresh_db, pool};
+module.exports = {refresh_db, pool, query};

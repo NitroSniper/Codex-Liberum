@@ -1,12 +1,3 @@
-CREATE TABLE posts (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    category VARCHAR(100) NOT NULL DEFAULT 'uncategorised',
-    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    image_url TEXT NULL
-);
-
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -14,6 +5,17 @@ CREATE TABLE users (
     salt TEXT NOT NULL,
     isVerified BOOLEAN DEFAULT FALSE,
     isModerator BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    category VARCHAR(100) NOT NULL DEFAULT 'uncategorised',
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    image_url TEXT NULL,
+    created_by INT NOT NULL,
+    CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
 CREATE TABLE sesh (

@@ -85,7 +85,7 @@ app.use(morgan('combined'))
 var indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 var getPostRouter = require('./routes/post');
-app.use('/get-posts', getPostRouter)
+app.use('/post', getPostRouter)
 const donateRouter = require('./routes/donate');
 app.use('/donate', donateRouter);
 const profileRouter = require('./routes/profile'); // for user profile routes
