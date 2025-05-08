@@ -21,7 +21,7 @@ router.post('/login', async (req, res) => {
   try {
     const loginResult = await loginUser(username, password);
 
-    if (!loginResult.success) {
+    if (loginResult === null) {
       return res.status(401).json({
         success: false,
         message: loginResult.message || 'Invalid credentials',

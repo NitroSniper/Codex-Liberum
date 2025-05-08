@@ -47,7 +47,29 @@ async function login(formData) {
         }
     } catch (error) {
         // ASSUMING REQUEST FAILED
-        loginForm.innerHTML = render_invalid_form({reason: "Login request has failed."});
+        loginForm.innerHTML = window.render.invalidLoginForm({reason: "Login request has failed."});
+    }
+}
+
+async function register(formData) {
+    try {
+        const response = await fetch('register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(Object.fromEntries(formData)),
+        });
+
+        // Checks if the response status is not ok, if there is an error an exception is thrown
+        const data = await response.json();
+        if (response.ok) {
+            registerDialog.showModal()
+            waitForModalClose(registerDialog).then((data) => {})
+        } else {
+            registerForm.innerHTML = window.render.invalidRegisterForm({reason: data.message});
+        }
+    } catch (error) {
+        // ASSUMING REQUEST FAILED
+        registerForm.innerHTML = window.render.invalidRegisterForm({reason: "register request has failed."});
     }
 }
 
@@ -58,13 +80,17 @@ function waitForModalClose(modal) {
 }
 
 const welcomeDialog = document.getElementById('welcomeDialog');
+const registerDialog = document.getElementById('registerDialog');
 const postsContainer = document.getElementById("posts");
 const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
 // conditional exec once
 if (postsContainer) {
     fetch_thumbnails("", 4).then(r => {
     })
 }
 
+// decorate forms
 const search_form = ignore_form(populate_posts)
 const login_form = ignore_form(login)
+const register_form = ignore_form(register)

@@ -1,5 +1,18 @@
 const crypto = require('crypto');
-const { pool } = require('../db/db');
+const { query } = require('../db/db');
+const argon2 = require('argon2');
+
+// Reason - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+const argon_opts = {
+    type: argon2.argon2id,
+    memoryCost: 2 ** 16,
+    hashLength: 64,
+    timeCost: 4, // iteration,
+    parallelism: 4,
+    secret: Buffer.from(process.env.ARGON_PEPPER)
+};
+
+
 
 // getSession from session module
 const { getSession } = require('./session');
@@ -14,7 +27,8 @@ function generateSalt() {
 
 // Using crypto function (SHA256) to hash the password with the salt and pepper
 function hashPassword(password, salt) {
-    const passwordWithSaltAndPepper = salt + password + pepper;
+    // salt is unneeded since argon2 does salting under the hood
+    const hashed_password = argon2.hash(password, argon_opts);
     return crypto.createHash('sha256')
         .update(passwordWithSaltAndPepper)
         .digest('hex');
@@ -28,61 +42,57 @@ async function verifyPassword(storedHash, enteredPassword, storedSalt) {
 
 //Register user
 async function registerUser(username, password) {
+
+    const hash = await argon2.hash(password, argon_opts);
     try {
-        const salt = generateSalt();
-        const hashedPassword = hashPassword(password, salt);
-
-        const query = `
-            INSERT INTO users (username, salt, hashed_password, isverified, ismoderator)
-            VALUES ($1, $2, $3, $4, $5) RETURNING id
-        `;
-        const result = await pool.query(query, [username, salt, hashedPassword, false, false]);
-
-        return { success: true, message: "User registered successfully!", userId: result.rows[0].id };
+        await query(`INSERT INTO users (username, hashed_password, isverified, ismoderator)
+                     VALUES ($1, $2, $3, $4)`, [username, hash, false, false]);
+        return true
     } catch (error) {
         console.error("Error during user registration:", error);
-        return { success: false, message: "Error registering user" };
+        return false
     }
 }
 
 // Authenticate a user during login
 async function loginUser(username, password) {
     try {
-      const query = 'SELECT id, salt, hashed_password, "ismoderator" FROM users WHERE username = $1';
-      const { rows } = await pool.query(query, [username]);
-      if (rows.length === 0) {
-        return { success: false, message: "Invalid username or password" };
-      }
-      const user = rows[0];
-  
-      // Temporary login for debugging
-      console.log('Login Debug');
-      console.log('Entered password:', password);
-      console.log('Stored salt:',     user.salt);
-      console.log('Stored hash:',     user.hashed_password);
-  
-      const computedHash = hashPassword(password, user.salt);
-      console.log('Computed hash:', computedHash);
-  
-      const passwordValid = (computedHash === user.hashed_password);
-      console.log('Is valid password:', passwordValid);
-      console.log('--------------------');
-  
-      if (passwordValid) {
-        return {
-          success: true,
-          message: "Login successful!",
-          userId:    user.id,
-          ismoderator: user.ismoderator,
-        };
-      } else {
-        return { success: false, message: "Invalid username or password" };
-      }
+        const rows = query('SELECT id, hashed_password FROM users WHERE username = $1', [username])
+        if (rows.length === 0) {
+            return {success: false, message: null} // give generic error msg
+        }
+
+        const user = rows[0]
+        if (await argon2.verify(user.hashed_password, password, argon_opts)) {
+            return { success: true, message: null } // give generic error msg
+        } else {
+            return {success: false, message: null} // give generic error msg
+        }
     } catch (error) {
-      console.error("Error during login:", error);
-      return { success: false, message: "Error during login process" };
+        console.error("Error during user login:", error);
+        return { success: false, message: null };
     }
-  }
+}
+
+
+async function verifySession(req, res, next) {
+    try {
+        const token = req.cookies.session_token
+        req.session = null
+        if (!token) next()
+        const session = await getSession(token)
+        if (!session) return next()
+        req.session = {
+            userID: session.user_id,
+            isModerator: session.ismoderator,
+        }
+        next()
+    } catch (error) {
+        // session shouldn't be set if there is an error since it is set at the end
+        console.error('Session middleware error:', error);
+        next()
+    }
+}
   
 
 

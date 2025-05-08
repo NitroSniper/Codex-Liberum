@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/NitroSniper/Codex-Liberum#readme",
   "dependencies": {
+    "argon2": "^0.43.0",
     "cookie-parser": "^1.4.7",
     "dot": "^1.1.3",
     "express": "^4.21.2",

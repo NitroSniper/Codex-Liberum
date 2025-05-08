@@ -3,6 +3,8 @@ services:
     build: ./codex
 #    ports: # use if it is necessary to expose the container to the host machine
 #      - "3000:3000"
+    environment:
+      ARGON_PEPPER: secret_pepper
     develop:
       watch:
         - action: sync+restart
