@@ -12,14 +12,6 @@ const { sessionMiddleware } = require('./models/auth');
 // Importing routes for login & register
 
 
-
-app.use(express.static(path.join(__dirname, 'public')));
-// Define routes that are public
-app.use("/css", express.static(path.join(__dirname, 'public', 'css')));
-app.use("/view", express.static(path.join(__dirname, 'views', 'client')));
-app.use("/js", express.static(path.join(__dirname, 'public', 'js')));
-
-
 // For parsing JSON and form data
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -123,9 +115,9 @@ app.disable("x-powered-by");
 
 
 /* Import Routes */
-var indexRouter = require('./routes/index');
+const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
-var getPostRouter = require('./routes/post');
+const getPostRouter = require('./routes/post');
 app.use('/post', getPostRouter)
 const donateRouter = require('./routes/donate');
 app.use('/donate', donateRouter);
@@ -137,6 +129,8 @@ const moderatorRoutes = require('./routes/moderator');
 app.use('/moderator', moderatorRoutes);
 const authentication = require('./routes/authentication');
 app.use('/auth', authentication);
+const pub = require('./routes/public');
+app.use('/public', pub);
 
 
 app.get('/dashboard', sessionMiddleware, (req, res) => {

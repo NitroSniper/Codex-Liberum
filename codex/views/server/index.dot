@@ -2,7 +2,7 @@
 <head>
     {{#def.head}}
     <title>News Blog - Post Content</title>
-    <script type="text/javascript" src="/view/indexPost.js"></script>
+    <script type="text/javascript" src="/public/view/indexPost.js"></script>
 </head>
 <body>
 <header class="container">
