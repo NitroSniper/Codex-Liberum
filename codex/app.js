@@ -80,6 +80,8 @@ const authentication = require('./routes/authentication');
 app.use('/auth', authentication);
 const pub = require('./routes/public');
 app.use('/public', pub);
+const verification = require('./routes/verification');
+app.use('/auth', verification);
 
 
 app.get('/dashboard', sessionMiddleware, (req, res) => {
@@ -88,10 +90,6 @@ app.get('/dashboard', sessionMiddleware, (req, res) => {
 // app.get('/create-post', sessionMiddleware, (req, res) => {
 //     res.sendFile(path.join(__dirname, 'views', 'createPost.html'));
 // });
-
-app.get('/moderator', sessionMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'moderator.html'));
-});
 
 
 

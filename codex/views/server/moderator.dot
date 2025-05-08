@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{#def.head}}
+    <title>Moderator Dashboard</title>
+</head>
+<body> 
+
+<header class="container">
+    <nav>
+        <a href="/">
+            <ul>
+                <li><h1><strong>Codex Liberum</strong></h1></li>
+                <li><i><small>Free for all</small></i></li>
+            </ul>
+        </a>
+        <ul>
+            <li><a href="/auth/login" class="secondary">Login</a></li>
+            <li><a href="/auth/register" class="contrast">Register</a></li>
+            <li>
+                <button href="/donate" class="contrast">Donate</button>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container" style="max-width:500px">
+    <h2>Moderator Dashboard</h2>
+    <p>
+        <strong>Welcome to Codex Liberum Moderator page <br></strong>
+        Here you can verify users to allow them to create posts
+    </p>
+    <section id="userListContainer">
+        <p>Loading unverified users...</p>
+    </section>
+    <button id="verifyButton">Verify Selected Users</button>
+</main>
+
+</body>
+</html>

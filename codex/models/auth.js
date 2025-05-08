@@ -18,7 +18,7 @@ const argon_opts = {
 const { getSession } = require('./session');
 
 // Secret pepper
-const pepper = 'my_secret_pepper'; 
+const pepper = 'my_secret_pepper';
 
 // Using crypto function to generate a salt
 function generateSalt() {
@@ -57,22 +57,27 @@ async function registerUser(username, password) {
 // Authenticate a user during login
 async function loginUser(username, password) {
     try {
-        const rows = query('SELECT id, hashed_password FROM users WHERE username = $1', [username])
+        const result = await query('SELECT id, hashed_password, ismoderator FROM users WHERE username = $1', [username]);
+        const rows = result.rows;
         if (rows.length === 0) {
-            return {success: false, message: null} // give generic error msg
+            return null; // give generic error msg
         }
 
-        const user = rows[0]
-        if (await argon2.verify(user.hashed_password, password, argon_opts)) {
-            return { success: true, message: null } // give generic error msg
-        } else {
-            return {success: false, message: null} // give generic error msg
+        const user = rows[0];
+        const isValid = await argon2.verify(user.hashed_password, password, argon_opts);
+        if (!isValid) {
+            return null; // give generic error msg
         }
+        return {
+            userId: user.id,
+            ismoderator: user.ismoderator
+        };
     } catch (error) {
         console.error("Error during user login:", error);
-        return { success: false, message: null };
+        return null;
     }
 }
+
 
 
 async function verifySession(req, res, next) {
@@ -93,7 +98,7 @@ async function verifySession(req, res, next) {
         next()
     }
 }
-  
+
 
 
 
@@ -141,7 +146,7 @@ async function getUserById(userId) {
          FROM users
          WHERE id = $1`,
         [userId]
-      );
+    );
     return result.rows[0];
 }
 
