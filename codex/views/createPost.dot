@@ -40,11 +40,14 @@
             </div>
             <div>
             <label>Photo (optional):</label>
-            <input name="photo" type="file" accept="image/jpeg,image/png,image/gif">
+            <input name="photo" id="photo" type="file" accept="image/jpeg,image/png,image/gif">
             <small>Max 2 MB; JPG/PNG/GIF only.</small>
             </div>
+            <!-- place to hold the url coming back from uploads.localhost -->
+            <input id="photoUrl" name="photoUrl" type="hidden">
             <button type="submit">Publish</button>
           </form>
+          <script src="public/js/create-post.js"></script>
     </main>
 </body>
 </html>

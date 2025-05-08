@@ -1,3 +1,6 @@
+uploads.localhost {
+    reverse_proxy uploads:3001
+}
 localhost {
     reverse_proxy codex:3000
 }

@@ -6,60 +6,6 @@ const multer = require('multer');
 
 const { sessionMiddleware } = require('./models/auth');
 
-// set a multer destination and filename
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, 'public', 'uploads'));
-        // cb(null, 'public/uploads');
-    },
-    filename: (req, file, cb) => {
-        cb(null, new Date().valueOf() + '_' + file.originalname);
-    }
-});
-
-
-const upload = multer({
-    dest:'./public/uploads'
-});
-
-app.post('/stats', upload.single('uploaded_file'), function (req, res) {
-    // req.file is the name of your file in the form above, here 'uploaded_file'
-    // req.body will hold the text fields, if there were any 
-    console.log(req.file, req.body)
-  });
-
-
-// to check the extension and MIME type as well as the file size limit
-// const upload = multer({
-//     storage,
-//     fileFilter: (req, file, cb) => {
-//         const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
-//         const allowedExts = ['.jpg', '.jpeg', '.png', '.gif'];
-//         const ext = path.extname(file.originalname).toLowerCase();
-
-//         if (!allowedExts.includes(ext)) {
-//             return cb(new Error('Only JPG, PNG & GIF are allowed'), false);
-//         }
-//         if (!allowedMimes.includes(file.mimetype)) {
-//             return cb(new Error('Invalid MIME type'), false);
-//         }
-//         cb(null, true);
-//     },
-//     limits: { fileSize: 2 * 1024 * 1024 } // 2MB
-// });
-
-
-// const upload = multer({
-//     dest:'uploads/'
-// })
-
-app.use('/uploads',
-    express.static(path.join(__dirname, 'public', 'uploads'))
-);
-
-
-
-
 /* Import Routes */
 const middlewareRouter = require('./routes/middleware');
 app.use(middlewareRouter);
@@ -73,7 +19,7 @@ app.use('/donate', donateRouter);
 const profileRouter = require('./routes/profile'); // for user profile routes
 app.use('/profile', profileRouter);
 const createPost = require('./routes/createPost');
-app.use('/create-post', createPost(upload));
+app.use('/create-post', createPost);
 const moderatorRoutes = require('./routes/moderator');
 app.use('/moderator', moderatorRoutes);
 const authentication = require('./routes/authentication');

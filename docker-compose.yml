@@ -12,6 +12,18 @@ services:
           target: /usr/src/app/
           ignore:
             - node_modules/
+  uploads:
+    build: ./uploads
+#    ports: # use if it is necessary to expose the container to the host machine
+#      - "3000:3000"
+    # environment:
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./uploads
+          target: /usr/src/app/
+          ignore:
+            - node_modules/
   db:
     image: postgres
     restart: always
