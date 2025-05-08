@@ -1,3 +1,4 @@
+"use strict";
 function ignore_form(func) {
     return function (event) {
         event.preventDefault()
@@ -12,33 +13,16 @@ async function populate_posts(formData) {
 }
 
 async function fetch_thumbnails(name, amount) {
-    const render_article = doT.template(`
-    {{~ it.posts :p}}
-        <article>
-            <header>
-                <img src="https://wallpaperaccess.com/full/343619.jpg" alt="Lamp" style="width:100%">
-            </header>
-            <p>{{=p.title}}</p>
-            <footer><small>By {{=p.username}}</small></footer>
-        </article>
-    {{~}}
-    `);
     const response = await fetch('/post/get-posts?' + new URLSearchParams({
         name: name,
         amount: amount,
     }).toString())
     const posts = await response.json();
-    postsContainer.innerHTML = render_article({posts: posts});
+    postsContainer.innerHTML = window.render.indexPost({posts: posts});
 }
 
 
 async function login(formData) {
-    const render_invalid_form = doT.template(`
-        <input type="text" name="username" placeholder="Username" aria-invalid="true" required>
-        <input type="password" name="password" placeholder="Password" aria-invalid="true" required>
-        <small>{{=it.reason}}</small>
-        <button type="submit">Login</button>
-    `)
     try {
         const response = await fetch('login', {
             method: 'POST',
@@ -59,7 +43,7 @@ async function login(formData) {
                 }
             )
         } else {
-            loginForm.innerHTML = render_invalid_form({reason: data.message});
+            loginForm.innerHTML = window.render.invalidLoginForm({reason: data.message});
         }
     } catch (error) {
         // ASSUMING REQUEST FAILED
@@ -73,10 +57,10 @@ function waitForModalClose(modal) {
     });
 }
 
-// conditional exec once
-const loginForm = document.getElementById('loginForm');
 const welcomeDialog = document.getElementById('welcomeDialog');
 const postsContainer = document.getElementById("posts");
+const loginForm = document.getElementById('loginForm');
+// conditional exec once
 if (postsContainer) {
     fetch_thumbnails("", 4).then(r => {
     })
