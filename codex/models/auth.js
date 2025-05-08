@@ -112,12 +112,13 @@ async function sessionMiddleware(req, res, next) {
 }
 
 function handleSessionFail(req, res) {
-    // Check if the request is an API call 
-    if (req.originalUrl.startsWith('/profile') || req.originalUrl.startsWith('/api')) {
-        return res.status(401).json({ message: 'Session expired' });
-    } else {
-        return res.redirect('/login');
-    }
+    return res.status(401).json({ message: 'Session expired' });
+    // Check if the request is an API call
+    // if (req.originalUrl.startsWith('/profile') || req.originalUrl.startsWith('/api')) {
+    //     return res.status(401).json({ message: 'Session expired' });
+    // } else {
+    //     return res.redirect('/login');
+    // }
 }
 
 async function getUserById(userId) {

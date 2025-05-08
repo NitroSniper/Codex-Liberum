@@ -1,5 +1,6 @@
 window.addEventListener('DOMContentLoaded', async () => {
     try {
+      // we can do this on the serverside
     // Fetch the user profile
       const res = await fetch('/profile/get-user-profile', {
         credentials: 'include'

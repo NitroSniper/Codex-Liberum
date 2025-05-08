@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { pool } = require('../db/db');
+const { query } = require('../db/db');
 
 function generateSessionToken() {
     return crypto.randomBytes(16).toString('hex');
@@ -15,7 +15,7 @@ async function createSession(userId, maxAgeMinutes = 15) {
     //const expiresAt = new Date(Date.now() + (1 * 60 + 10) * 60 * 1000); // 1 hour + 10 minutes - test purposes
 
 
-    await pool.query(`
+    await query(`
         INSERT INTO sesh (user_id, session_token, last_active, expires_at)
         VALUES ($1, $2, $3, $4)
     `, [userId, token, now, expiresAt]);
@@ -24,9 +24,9 @@ async function createSession(userId, maxAgeMinutes = 15) {
 }
 
 async function getSession(token) {
-    const result = await pool.query(`
+    const result = await query(`
         SELECT s.*, u."ismoderator"
-        FROM sesh s
+        FROM sesh s INNER
         JOIN users u ON s.user_id = u.id
         WHERE s.session_token = $1 AND s.expires_at > NOW()
     `, [token]);

@@ -24,11 +24,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-
+    // Why does this need to be checked? if you are logging out. then you delete the session token and just go to home page
     //Checks session token
     try {
         const response = await fetch('/profile/get-user-profile', {
-            credentials: 'include',
+            credentials: 'include', // this is not being requested by a cross-origin.
             cache: 'no-store'
         });
 
