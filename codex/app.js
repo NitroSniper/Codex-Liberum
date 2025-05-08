@@ -1,21 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const app = express()
 const port = 3000
 const multer = require('multer');
-const morgan = require('morgan');
 
 const { sessionMiddleware } = require('./models/auth');
-
-// Importing routes for login & register
-
-
-// For parsing JSON and form data
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // set a multer destination and filename
 const storage = multer.diskStorage({

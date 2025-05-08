@@ -2,7 +2,13 @@ const express = require('express');
 const path = require("path");
 const router = express.Router();
 const morgan = require('morgan');
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser")
 
+
+router.use(bodyParser.json());
+router.use(cookieParser());
+router.use(bodyParser.urlencoded({ extended: true }));
 // HTTPS logging
 router.use(morgan('combined'))
 
