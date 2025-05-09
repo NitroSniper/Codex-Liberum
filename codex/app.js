@@ -25,8 +25,6 @@ const authentication = require('./routes/authentication');
 app.use('/auth', authentication);
 const pub = require('./routes/public');
 app.use('/public', pub);
-const verification = require('./routes/verification');
-app.use('/auth', verification);
 
 
 // app.get('/dashboard', sessionMiddleware, (req, res) => {

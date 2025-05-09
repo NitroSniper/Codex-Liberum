@@ -5,7 +5,12 @@
     {{=user.username}}
 </label>
 {{~}}
+{{? it.error}}
+<button type="submit" aria-invalid="true">Verify Selected Users</button>
+<small>{{=it.error}}</small>
+{{??}}
 <button type="submit">Verify Selected Users</button>
+{{?}}
 {{??}}
 <p>All users are verified </p>
 {{?}}

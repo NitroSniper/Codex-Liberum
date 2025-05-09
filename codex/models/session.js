@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const {query} = require('../db/db');
 
 function generateSessionToken() {
-    return crypto.randomBytes(16).toString('hex');
+    return crypto.randomBytes(16).toString('base64'); // 128 bit of entropy
 }
 
 

@@ -78,12 +78,7 @@ async function fetchUnverifiedUsers() {
 }
 
 async function verifyUsers(formData) {
-    console.log(Object.fromEntries(formData));
-}
-
-async function FUCK(formData) {
-    const checkboxes = document.querySelectorAll('#userListContainer input[type="checkbox"]:checked');
-    const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    const userIds = Array.from(formData.keys());
     if (userIds.length === 0) {
         alert('Please select at least one user to verify.');
         return;
@@ -105,7 +100,6 @@ async function FUCK(formData) {
         alert('Server error.');
     }
 }
-
 
 function waitForModalClose(modal) {
     return new Promise(resolve => {
