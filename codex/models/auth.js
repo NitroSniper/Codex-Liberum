@@ -14,7 +14,7 @@ const argon_opts = {
 
 
 // getSession from session module
-const {getSession} = require('./session');
+const {getSession, updateSessionToNow} = require('./session');
 
 // // Secret pepper
 // const pepper = 'my_secret_pepper';
@@ -76,13 +76,16 @@ async function verifySession(req, res, next) {
     try {
         req.session = null
         if (req.cookies === undefined || req.cookies.session_token === undefined) return next();
-        const session = await getSession(req.cookies.session_token)
+        const token = req.cookies.session_token;
+        const session = await getSession(token)
         if (!session) return next()
         req.session = {
             userID: session.user_id,
             isModerator: session.ismoderator,
             isVerified: session.isVerified,
         }
+        console.log("LASDFJLSAKDFJLKASJDFLKJSADLFKJAS;DLFKJSA;LDKJF")
+        await updateSessionToNow(token)
         next()
     } catch (error) {
         // session shouldn't be set if there is an error since it is set at the end

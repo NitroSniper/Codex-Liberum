@@ -57,7 +57,9 @@ async function register(formData) {
         const data = await response.json();
         if (response.ok) {
             registerDialog.showModal()
-            waitForModalClose(registerDialog).then((data) => { })
+            waitForModalClose(registerDialog).then(() => {
+                window.location.href = '/';
+            })
         } else {
             registerForm.innerHTML = window.render.invalidRegisterForm({ reason: data.message });
         }
@@ -69,12 +71,15 @@ async function register(formData) {
 
 
 // Verify function
-async function verify() {
-    const res = await fetch('/auth/unverified-users');
+async function fetchUnverifiedUsers() {
+    const res = await fetch('/moderator/unverified-users');
     const users = await res.json();
     moderatorUserList.innerHTML = window.render.moderatorUserList({unverifiedUsers: users, length: users.length});
 }
 
+async function verifyUsers(formData) {
+    console.log(Object.fromEntries(formData));
+}
 
 async function FUCK(formData) {
     const checkboxes = document.querySelectorAll('#userListContainer input[type="checkbox"]:checked');
@@ -84,7 +89,7 @@ async function FUCK(formData) {
         return;
     }
     try {
-        const res = await fetch('/auth/verify-users', {
+        const res = await fetch('/moderator/verify-users', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({userIds})
@@ -116,18 +121,22 @@ const logoutForm = document.getElementById('logoutForm');
 const registerForm = document.getElementById('registerForm');
 const moderatorUserList = document.getElementById('userListContainer');
 const verifyButton = document.getElementById('verifyButton');
+const logoutLink = document.getElementById('logoutLink');
 
-// conditional exec once
-if (postsContainer) {
-    fetch_thumbnails("", 4).then(r => {
+// conditional actions
+if (logoutLink) logoutLink.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevents default link behavior
+    logoutForm.submit(); // Submits the form
+});
+
+if (postsContainer) fetch_thumbnails("", 4).then(r => {
     })
-}
 
-if (moderatorUserList) {
-    verify()
-}
+if (moderatorUserList) fetchUnverifiedUsers().then(r => {})
+
 
 // decorate forms
 const search_form = ignore_form(populate_posts)
 const login_form = ignore_form(login)
 const register_form = ignore_form(register)
+const verify_user_form = ignore_form(verifyUsers)

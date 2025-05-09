@@ -31,9 +31,8 @@
         <strong>Welcome to Codex Liberum Moderator page <br></strong>
         Here you can verify users to allow them to create posts
     </p>
-    <form id="userListContainer">
+    <form id="userListContainer" onsubmit="verify_user_form(event)">
         <p>Loading unverified users...</p>
-        <button id="verifyButton">Verify Selected Users</button>
     </form>
 </main>
 

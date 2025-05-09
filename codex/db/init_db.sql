@@ -20,9 +20,8 @@ CREATE TABLE posts (
 CREATE TABLE sesh (
     session_token TEXT PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_active TIMESTAMP,
-    expires_at TIMESTAMP 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE donations (

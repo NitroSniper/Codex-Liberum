@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Create session token and set cookie
-    const { token, expiresAt } = await createSession(loginResult);
+    const token = await createSession(loginResult);
 
     res.cookie('session_token', token, {
       httpOnly: true,
