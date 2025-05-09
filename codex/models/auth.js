@@ -82,9 +82,9 @@ async function verifySession(req, res, next) {
         req.session = {
             userID: session.user_id,
             isModerator: session.ismoderator,
-            isVerified: session.isVerified,
+            isVerified: session.isverified,
         }
-        console.log("LASDFJLSAKDFJLKASJDFLKJSADLFKJAS;DLFKJSA;LDKJF")
+        console.log(session)
         await updateSessionToNow(token)
         next()
     } catch (error) {

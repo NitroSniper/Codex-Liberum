@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{#def.head}}
+    <title>Error</title>
+</head>
+<body>
+<header class="container">
+    <nav>
+        <a href="/">
+            <ul>
+                <li><h1><strong>Codex Liberum</strong></h1></li>
+                <li><i><small>Free for all</small></i></li>
+            </ul>
+        </a>
+        <ul></ul>
+    </nav>
+</header>
+<main class="container" style="max-width:500px">
+    <h1>{{=it.message}}</h1>
+</main>
+</body>
+</html>

@@ -26,7 +26,7 @@ router.get('/unverified-users', async (req, res) => {
 
 router.post('/verify-users', async (req, res) => {
     if (req.session === null) {
-        return res.status(403).json({message: 'Forbidden'});
+        return res.status(403).send(dots.message({message: 'Forbidden'}));
     }
 
     const {userIds} = req.body;

@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser")
 const { verifySession } = require("../models/auth");
+const dots = require("../views/dots")
+
 
 
 router.use(bodyParser.json());
@@ -53,5 +55,6 @@ router.use((req, res, next) => {
     next()
 })
 router.use(verifySession);
+
 
 module.exports = router;

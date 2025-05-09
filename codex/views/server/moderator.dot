@@ -16,10 +16,8 @@
             </ul>
         </a>
         <ul>
-            <li><a href="/auth/login" class="secondary">Login</a></li>
-            <li><a href="/auth/register" class="contrast">Register</a></li>
             <li>
-                <button href="/donate" class="contrast">Donate</button>
+                <button href="/donate" class="secondary">Donate</button>
             </li>
         </ul>
     </nav>

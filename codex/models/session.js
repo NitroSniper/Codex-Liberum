@@ -23,7 +23,7 @@ async function createSession(userId) {
 
 async function getSession(token) {
     const result = await query(`
-        SELECT s.*, u."ismoderator"
+        SELECT s.*, u."ismoderator", u.isverified
         FROM sesh s
                  INNER JOIN users u ON s.user_id = u.id
         WHERE s.session_token = $1

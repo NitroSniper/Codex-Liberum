@@ -65,7 +65,7 @@ router.post('/register', async (req, res) => {
 // Logout Route
 // Passes userId
 router.post('/logout', async (req, res) => {
-    if (req.session === null) return res.status(401).send('Not logged in');
+    if (req.session === null) return res.status(401).send(dots.message({message: "You are not logged in"}));
     try {
         res.clearCookie('session_token');
         res.json({ message: 'You have logged out successfully!' });

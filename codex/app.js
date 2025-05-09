@@ -3,6 +3,7 @@ const path = require('path');
 const app = express()
 const port = 3000
 const multer = require('multer');
+const dots = require('./views/dots');
 
 const { sessionMiddleware } = require('./models/auth');
 
@@ -27,48 +28,10 @@ const pub = require('./routes/public');
 app.use('/public', pub);
 
 
-// app.get('/dashboard', sessionMiddleware, (req, res) => {
-//     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
-// });
-// app.get('/create-post', sessionMiddleware, (req, res) => {
-//     res.sendFile(path.join(__dirname, 'views', 'createPost.html'));
-// });
-
-
-
-// app.get('/profile/get-user-profile', sessionMiddleware, async (req, res) => {
-//   try {
-//     const result = await pool.query(
-//       `SELECT
-//          id,
-//          username,
-//         isverified,
-//         ismoderator
-//        FROM users
-//        WHERE id = $1`,
-//       [req.userId]
-//     );
-//
-//     if (result.rows.length === 0) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-//
-//     // return the full row
-//     res.json(result.rows[0]);
-//   } catch (error) {
-//     console.error('Error fetching user profile:', error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// });
-
-
-
-
 // For undefined routes
 app.use((req, res) => {
-    res.status(404).send('Page not found');
+    res.status(404).send(dots.message({message: "404: Page Not Found"}));
 });
-
 // Start the server
 const server = app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
