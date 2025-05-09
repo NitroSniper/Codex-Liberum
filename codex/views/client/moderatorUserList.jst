@@ -1,0 +1,11 @@
+{{? it.length }}
+{{~ it.unverifiedUsers :user }}
+<label>
+    <input type="checkbox" name="{{=user.id}}">
+    {{=user.username}}
+</label>
+{{~}}
+<button type="submit">Verify Selected Users</button>
+{{??}}
+<p>All users are verified </p>
+{{?}}

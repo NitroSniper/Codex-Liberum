@@ -2,10 +2,6 @@ const express = require('express');
 const router = express.Router();
 let dots = require("../views/dots")
 const { pool } = require('../db/db');
-const { sessionMiddleware } = require('../models/auth');
-
-// apply auth checks to all create-post routes
-router.use(sessionMiddleware);
 
 router.get('/', (req, res) => {
   res.send(dots.createPost());
@@ -31,6 +27,7 @@ router.post('/submit', async (req, res) => {
 
 
 router.get('/submit', (req, res) => {
+  // put this html in a .dot file
   res.send(`
     <!DOCTYPE html>
     <html lang="en">

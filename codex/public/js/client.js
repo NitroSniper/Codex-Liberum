@@ -33,23 +33,14 @@ async function login(formData) {
         // Checks if the response status is not ok, if there is an error an exception is thrown
         const data = await response.json();
         if (response.ok) {
-            const isModerator = data.ismoderator;
-
             welcomeDialog.showModal();
             waitForModalClose(welcomeDialog).then(() => {
-                if (isModerator) {
-                    window.location.href = '/moderator';
-                } else {
-                    window.location.href = '/';
-                }
+                window.location.href = '/';
             });
-        }
-
-        else {
+        } else {
             loginForm.innerHTML = window.render.invalidLoginForm({ reason: data.message });
         }
     } catch (error) {
-        // ASSUMING REQUEST FAILED
         loginForm.innerHTML = window.render.invalidLoginForm({ reason: "Login request has failed." });
     }
 }
@@ -76,63 +67,37 @@ async function register(formData) {
     }
 }
 
-// Verify function 
+
+// Verify function
 async function verify() {
-    const container = document.getElementById('userListContainer');
-    try {
-        const res = await fetch('/auth/unverified-users');
-        const users = await res.json();
+    const res = await fetch('/auth/unverified-users');
+    const users = await res.json();
+    moderatorUserList.innerHTML = window.render.moderatorUserList({unverifiedUsers: users, length: users.length});
+}
 
-        if (users.length === 0) {
-            container.innerHTML = '<p>All users are verified </p>';
-            return;
-        }
-        // Create a list of checkboxes for users
-        const wrapper = document.createElement('div');
-        users.forEach(user => {
-            const item = document.createElement('div');
-            item.innerHTML = `
-                <label>
-                    <input type="checkbox" value="${user.id}">
-                    ${user.username}
-                </label>
-            `;
-            wrapper.appendChild(item);
-        });
-        container.innerHTML = '';
-        container.appendChild(wrapper);
-    } catch (err) {
-        container.innerHTML = '<p>Error loading users.</p>';
+
+async function FUCK(formData) {
+    const checkboxes = document.querySelectorAll('#userListContainer input[type="checkbox"]:checked');
+    const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    if (userIds.length === 0) {
+        alert('Please select at least one user to verify.');
+        return;
     }
-
-
-    // Handles the verify button 
-    const verifyButton = document.getElementById('verifyButton');
-    if (verifyButton) {
-        verifyButton.addEventListener('click', async () => {
-            const checkboxes = document.querySelectorAll('#userListContainer input[type="checkbox"]:checked');
-            const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-            if (userIds.length === 0) {
-                alert('Please select at least one user to verify.');
-                return;
-            }
-            try {
-                const res = await fetch('/auth/verify-users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userIds })
-                });
-                if (res.ok) {
-                    alert('Users verified successfully!');
-                    location.reload();
-                } else {
-                    const data = await res.json();
-                    alert('Failed: ' + data.message);
-                }
-            } catch (err) {
-                alert('Server error.');
-            }
+    try {
+        const res = await fetch('/auth/verify-users', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({userIds})
         });
+        if (res.ok) {
+            alert('Users verified successfully!');
+            location.reload();
+        } else {
+            const data = await res.json();
+            alert('Failed: ' + data.message);
+        }
+    } catch (err) {
+        alert('Server error.');
     }
 }
 
@@ -147,18 +112,22 @@ const welcomeDialog = document.getElementById('welcomeDialog');
 const registerDialog = document.getElementById('registerDialog');
 const postsContainer = document.getElementById("posts");
 const loginForm = document.getElementById('loginForm');
+const logoutForm = document.getElementById('logoutForm');
 const registerForm = document.getElementById('registerForm');
+const moderatorUserList = document.getElementById('userListContainer');
+const verifyButton = document.getElementById('verifyButton');
+
 // conditional exec once
 if (postsContainer) {
     fetch_thumbnails("", 4).then(r => {
     })
 }
 
+if (moderatorUserList) {
+    verify()
+}
+
 // decorate forms
 const search_form = ignore_form(populate_posts)
 const login_form = ignore_form(login)
 const register_form = ignore_form(register)
-
-if (document.getElementById('userListContainer')) {
-    verify();
-}

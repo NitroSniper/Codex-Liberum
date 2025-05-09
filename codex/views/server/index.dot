@@ -13,12 +13,27 @@
                 <li><i><small>Free for all</small></i></li>
             </ul>
         </a>
+        <form id="logoutForm" action="auth/logout" method="POST"></form>
         <ul>
-            <li><a href="/auth/login" class="contrast">Login</a></li>
-            <li><a href="/auth/register" class="contrast">Register</a></li>
+            {{? it.moderator}}
             <li>
-                <button href="/donate" class="secondary">Donate</button>
+                <a href="/moderator" class="secondary">Moderate</a>
             </li>
+            {{?}}
+            {{? it.verified}}
+            <li>
+                <a href="/" class="secondary">Create Post (TODO)</a>
+            </li>
+            {{?}}
+            {{? it.logout }}
+            <li>
+                <a href="javascript: logoutForm.submit()" class="contrast">Log out</a>
+            </li>
+            {{??}}
+            <li><a href="/auth/login" class="contrast">Log in</a></li>
+            <li><a href="/auth/register" class="contrast">Register</a></li>
+            {{?}}
+            <li> <a href="/donate" class="secondary" role="button">Donate</a></li>
         </ul>
     </nav>
 </header>

@@ -4,6 +4,7 @@ const router = express.Router();
 const morgan = require('morgan');
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser")
+const { verifySession } = require("../models/auth");
 
 
 router.use(bodyParser.json());
@@ -51,5 +52,6 @@ router.use((req, res, next) => {
     // res.setHeader('X-Permitted-Cross-Domain-Policies', 'none')
     next()
 })
+router.use(verifySession);
 
 module.exports = router;

@@ -9,6 +9,7 @@ const { sessionMiddleware } = require('./models/auth');
 /* Import Routes */
 const middlewareRouter = require('./routes/middleware');
 app.use(middlewareRouter);
+// disable express fingerprinting on server
 app.disable("x-powered-by");
 const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
@@ -16,8 +17,6 @@ const getPostRouter = require('./routes/post');
 app.use('/post', getPostRouter)
 const donateRouter = require('./routes/donate');
 app.use('/donate', donateRouter);
-const profileRouter = require('./routes/profile'); // for user profile routes
-app.use('/profile', profileRouter);
 const createPost = require('./routes/createPost');
 app.use('/create-post', createPost);
 const moderatorRoutes = require('./routes/moderator');
@@ -30,59 +29,41 @@ const verification = require('./routes/verification');
 app.use('/auth', verification);
 
 
-app.get('/dashboard', sessionMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
-});
+// app.get('/dashboard', sessionMiddleware, (req, res) => {
+//     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+// });
 // app.get('/create-post', sessionMiddleware, (req, res) => {
 //     res.sendFile(path.join(__dirname, 'views', 'createPost.html'));
 // });
 
 
 
-app.get('/profile/get-user-profile', sessionMiddleware, async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT 
-         id,
-         username,
-        isverified,
-        ismoderator
-       FROM users
-       WHERE id = $1`,
-      [req.userId]
-    );
+// app.get('/profile/get-user-profile', sessionMiddleware, async (req, res) => {
+//   try {
+//     const result = await pool.query(
+//       `SELECT
+//          id,
+//          username,
+//         isverified,
+//         ismoderator
+//        FROM users
+//        WHERE id = $1`,
+//       [req.userId]
+//     );
+//
+//     if (result.rows.length === 0) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+//
+//     // return the full row
+//     res.json(result.rows[0]);
+//   } catch (error) {
+//     console.error('Error fetching user profile:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
 
-    // return the full row
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-// Logout Route
-// Passes userId 
-app.post('/logout', sessionMiddleware, async (req, res) => {
-    const token = req.cookies.session_token;
-    const userId = req.userId;
-
-    if (!token) {
-        return res.status(400).json({ message: 'No session found' });
-    }
-
-    try {
-        res.clearCookie('session_token');
-        res.json({ message: 'You have logged out successfully!' });
-    } catch (error) {
-        console.error('Error during logout:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
 
 
 // For undefined routes

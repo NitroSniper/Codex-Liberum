@@ -2,7 +2,7 @@ const express = require('express');
 let dots = require("../views/dots")
 const router = express.Router();
 const { createSession } = require('../models/session');
-const { registerUser, loginUser, sessionMiddleware } = require('../models/auth');
+const { registerUser, loginUser } = require('../models/auth');
 
 /* GET login page. */
 router.get('/login', (req, res) => {
@@ -23,13 +23,12 @@ router.post('/login', async (req, res) => {
 
     if (loginResult === null) {
       return res.status(401).json({
-        success: false,
-        message: loginResult.message || 'Invalid credentials',
+        message: 'Invalid credentials',
       });
     }
 
     // Create session token and set cookie
-    const { token, expiresAt } = await createSession(loginResult.userId);
+    const { token, expiresAt } = await createSession(loginResult);
 
     res.cookie('session_token', token, {
       httpOnly: true,
@@ -38,9 +37,7 @@ router.post('/login', async (req, res) => {
     });
 
     res.json({
-      success: true,
       message: 'Login successful!',
-      ismoderator: loginResult.ismoderator,
     });
 
   } catch (error) {
@@ -54,10 +51,10 @@ router.post('/register', async (req, res) => {
   const { username, password } = req.body;
   try {
     const result = await registerUser(username, password);
-    if (result.success) {
+    if (result) {
       res.json({ message: 'You have registered successfully!' });
     } else {
-      res.status(400).json({ message: 'Error registering user' });
+      res.status(400).json({ message: 'Password is too weak/Account already exists!' });
     }
   } catch (error) {
     console.error('Error during registration:', error);
@@ -65,20 +62,17 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.get('/validate-session', sessionMiddleware, async (req, res) => {
-  try {
-    const result = await query(`SELECT id FROM users WHERE id = $1`, [req.userId]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: '' });
+// Logout Route
+// Passes userId
+router.post('/logout', async (req, res) => {
+    if (req.session === null) return res.status(401).send('Not logged in');
+    try {
+        res.clearCookie('session_token');
+        res.json({ message: 'You have logged out successfully!' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    // return the full row
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
 });
 
 module.exports = router;
