@@ -6,8 +6,8 @@ const {registerUser, loginUser} = require('../models/auth');
 const {objectIsEmpty} = require("../models/util");
 
 
+const minLength = 8;
 function isWeakPassword(password) {
-    const minLength = 8;
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
@@ -68,14 +68,18 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     const {username, password} = req.body;
 
-    if (isWeakPassword(password)) return res.status(400).json({message: 'Password is too weak/Account already exists!'});
+    const genericMessage = `
+    Password is too weak/Account already exists!<br>
+    Password must be ${minLength}+ characters, include a number, a symbol, and both upper & lower case letters. 
+    `
+    if (isWeakPassword(password)) return res.status(400).json({message: genericMessage});
 
     try {
         const result = await registerUser(username, password);
         if (result) {
             res.json({message: 'You have registered successfully!'});
         } else {
-            res.status(400).json({message: 'Password is too weak/Account already exists!'});
+            res.status(400).json({message: genericMessage});
         }
     } catch (error) {
         console.error('Error during registration:', error);

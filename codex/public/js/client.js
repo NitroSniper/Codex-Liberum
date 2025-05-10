@@ -16,6 +16,7 @@ async function populate_posts(formData) {
     const name = formData.get("query");
     await fetch_thumbnails(name, 4)
 }
+const _ = (html) => DOMPurify.sanitize(html);
 
 async function fetch_thumbnails(name, amount) {
     const response = await fetch('/post/get-posts?' + new URLSearchParams({
@@ -25,7 +26,7 @@ async function fetch_thumbnails(name, amount) {
         headers: fetchDefaultHeaders
     })
     const posts = await response.json();
-    postsContainer.innerHTML = window.render.indexPost({ posts: posts });
+    postsContainer.innerHTML = _(window.render.indexPost({ posts: posts }));
 }
 
 
@@ -45,10 +46,10 @@ async function login(formData) {
                 window.location.href = '/';
             });
         } else {
-            loginForm.innerHTML = window.render.invalidLoginForm({ reason: data.message });
+            loginForm.innerHTML = _(window.render.invalidLoginForm({ reason: data.message }));
         }
     } catch (error) {
-        loginForm.innerHTML = window.render.invalidLoginForm({ reason: "Login request has failed." });
+        loginForm.innerHTML = _(window.render.invalidLoginForm({ reason: "Login request has failed." }));
     }
 }
 
@@ -68,11 +69,11 @@ async function register(formData) {
                 window.location.href = '/';
             })
         } else {
-            registerForm.innerHTML = window.render.invalidRegisterForm({ reason: data.message });
+            registerForm.innerHTML = _(window.render.invalidRegisterForm({ reason: data.message }));
         }
     } catch (error) {
         // ASSUMING REQUEST FAILED
-        registerForm.innerHTML = window.render.invalidRegisterForm({ reason: "register request has failed." });
+        registerForm.innerHTML = _(window.render.invalidRegisterForm({ reason: "register request has failed." }));
     }
 }
 
@@ -83,7 +84,7 @@ async function fetchUnverifiedUsers() {
         headers: fetchDefaultHeaders,
     });
     const users = await res.json();
-    moderatorUserList.innerHTML = window.render.moderatorUserList({unverifiedUsers: users, length: users.length});
+    moderatorUserList.innerHTML = _(window.render.moderatorUserList({unverifiedUsers: users, length: users.length}));
 }
 
 async function verifyUsers(formData) {
