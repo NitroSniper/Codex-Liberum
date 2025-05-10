@@ -4,9 +4,11 @@ const router = express.Router();
 const {createSession} = require('../models/session');
 const {registerUser, loginUser} = require('../models/auth');
 const {objectIsEmpty} = require("../models/util");
+const {timingMitigationMiddleware} = require("./middleware");
 
 
 const minLength = 8;
+
 function isWeakPassword(password) {
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
@@ -33,7 +35,7 @@ router.get('/register', (req, res) => {
 });
 
 /* POST login page. */
-router.post('/login', async (req, res) => {
+router.post('/login', timingMitigationMiddleware, async (req, res) => {
     const {username, password} = req.body;
 
     try {
@@ -65,7 +67,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Register Route
-router.post('/register', async (req, res) => {
+router.post('/register', timingMitigationMiddleware, async (req, res) => {
     const {username, password} = req.body;
 
     const genericMessage = `

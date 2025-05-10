@@ -21,6 +21,7 @@ const getTokenFromState = (req) => objectIsEmpty(req.session) ? null : req.sessi
 const getTokenFromRequest = (req) => req.headers['x-csrf-token'];
 const isRequestValid = (req) => getTokenFromRequest(req) === getTokenFromState(req);
 const generateTokenHash = () => randomBytes(128).toString("base64");
+const requiresCSRFProtection = (req) => !(ignoredMethods.includes(req.method) || ignoredPaths.includes(req.path));
 function generateToken(req, overwrite) {
     if (!overwrite) return getTokenFromState(req);
     const newToken = generateTokenHash();
@@ -33,7 +34,6 @@ function storeTokenInState(req, csrf_token) {
     query('UPDATE sesh SET csrf_token = $2 WHERE session_token = $1', [req.session.token, csrf_token]).then(x => {});
 }
 
-const requiresCSRFProtection = (req) => !(ignoredMethods.includes(req.method) || ignoredPaths.includes(req.path));
 
 function csrfTokenMiddleware(req, res, next) {
     req.csrfToken = (overwrite) => generateToken(req, overwrite);

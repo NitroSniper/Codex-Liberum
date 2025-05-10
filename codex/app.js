@@ -8,7 +8,7 @@ const dots = require('./views/dots');
 const { sessionMiddleware } = require('./models/auth');
 
 /* Import Routes */
-const middlewareRouter = require('./routes/middleware');
+const { router: middlewareRouter }  = require('./routes/middleware');
 app.use(middlewareRouter);
 // disable express fingerprinting on server
 app.disable("x-powered-by");
