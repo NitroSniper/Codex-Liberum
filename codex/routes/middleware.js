@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser")
 const { verifySession } = require("../models/auth");
-const dots = require("../views/dots")
+const {csrfTokenMiddleware} = require("../models/csrf");
 
 
 
@@ -52,9 +52,10 @@ router.use((req, res, next) => {
     res.setHeader('X-Download-Options', 'noopen')
     // Controls cross-domain behavior for Adobe products, like Acrobat
     res.setHeader('X-Permitted-Cross-Domain-Policies', 'none')
+
     next()
 })
 router.use(verifySession);
-
+router.use(csrfTokenMiddleware)
 
 module.exports = router;

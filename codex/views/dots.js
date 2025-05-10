@@ -9,5 +9,9 @@ const dots = require("dot").process({
   path: path.join(__dirname, "server"),
 });
 
+// const dots = (name) => {
+//   internal_dots.;
+// }
+
 
 module.exports = dots

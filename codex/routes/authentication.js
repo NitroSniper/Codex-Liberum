@@ -3,15 +3,16 @@ let dots = require("../views/dots")
 const router = express.Router();
 const { createSession } = require('../models/session');
 const { registerUser, loginUser } = require('../models/auth');
+const {objectIsEmpty} = require("../models/util");
 
 /* GET login page. */
 router.get('/login', (req, res) => {
-  res.send(dots.login())
+  res.send(dots.login({csrf: req.csrfToken()}));
 });
 
 /* GET Register page. */
 router.get('/register', (req, res) => {
-  res.send(dots.register())
+  res.send(dots.register({csrf: req.csrfToken()}));
 });
 
 /* POST login page. */
@@ -28,7 +29,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Create session token and set cookie
-    const token = await createSession(loginResult);
+    const token = await createSession(req, loginResult);
 
     res.cookie('session_token', token, {
       httpOnly: true,
@@ -65,7 +66,7 @@ router.post('/register', async (req, res) => {
 // Logout Route
 // Passes userId
 router.post('/logout', async (req, res) => {
-    if (req.session === null) return res.status(401).send(dots.message({message: "You are not logged in"}));
+    if (objectIsEmpty(req.session)) return res.status(401).send(dots.message({message: "You are not logged in"}));
     try {
         res.clearCookie('session_token');
         res.json({ message: 'You have logged out successfully!' });

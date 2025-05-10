@@ -1,4 +1,9 @@
 "use strict";
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+const fetchDefaultHeaders = {
+    'X-CSRF-Token': csrfToken,
+    'Content-Type': 'application/json',
+}
 function ignore_form(func) {
     return function (event) {
         event.preventDefault()
@@ -16,7 +21,9 @@ async function fetch_thumbnails(name, amount) {
     const response = await fetch('/post/get-posts?' + new URLSearchParams({
         name: name,
         amount: amount,
-    }).toString())
+    }).toString(), {
+        headers: fetchDefaultHeaders
+    })
     const posts = await response.json();
     postsContainer.innerHTML = window.render.indexPost({ posts: posts });
 }
@@ -26,7 +33,7 @@ async function login(formData) {
     try {
         const response = await fetch('login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: fetchDefaultHeaders,
             body: JSON.stringify(Object.fromEntries(formData)),
         });
 
@@ -49,7 +56,7 @@ async function register(formData) {
     try {
         const response = await fetch('register', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: fetchDefaultHeaders,
             body: JSON.stringify(Object.fromEntries(formData)),
         });
 
@@ -72,7 +79,9 @@ async function register(formData) {
 
 // Verify function
 async function fetchUnverifiedUsers() {
-    const res = await fetch('/moderator/unverified-users');
+    const res = await fetch('/moderator/unverified-users', {
+        headers: fetchDefaultHeaders,
+    });
     const users = await res.json();
     moderatorUserList.innerHTML = window.render.moderatorUserList({unverifiedUsers: users, length: users.length});
 }
@@ -86,7 +95,7 @@ async function verifyUsers(formData) {
     try {
         const res = await fetch('/moderator/verify-users', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: fetchDefaultHeaders,
             body: JSON.stringify({userIds})
         });
         if (res.ok) {
@@ -118,19 +127,27 @@ const verifyButton = document.getElementById('verifyButton');
 const logoutLink = document.getElementById('logoutLink');
 
 // conditional actions
-if (logoutLink) logoutLink.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevents default link behavior
-    logoutForm.submit(); // Submits the form
-});
-
-if (postsContainer) fetch_thumbnails("", 4).then(r => {
-    })
-
-if (moderatorUserList) fetchUnverifiedUsers().then(r => {})
-
+function logout() {
+    fetch('/auth/logout', {
+        method: 'POST',
+        headers: fetchDefaultHeaders,
+    }).then(z => {
+        window.location.reload();
+    });
+}
 
 // decorate forms
 const search_form = ignore_form(populate_posts)
 const login_form = ignore_form(login)
 const register_form = ignore_form(register)
 const verify_user_form = ignore_form(verifyUsers)
+
+if (logoutLink) logoutLink.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevents default link behavior
+    logout(); // Submits the form
+});
+
+if (postsContainer) fetch_thumbnails("", 4).then(r => {
+})
+
+if (moderatorUserList) fetchUnverifiedUsers().then(r => {})

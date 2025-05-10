@@ -72,17 +72,20 @@ async function loginUser(username, password) {
 }
 
 
+
 async function verifySession(req, res, next) {
     try {
-        req.session = null
+        req.session = {}
         if (req.cookies === undefined || req.cookies.session_token === undefined) return next();
         const token = req.cookies.session_token;
         const session = await getSession(token)
         if (!session) return next()
         req.session = {
+            token: token,
             userID: session.user_id,
             isModerator: session.ismoderator,
             isVerified: session.isverified,
+            csrfToken: session.csrf_token
         }
         console.log(session)
         await updateSessionToNow(token)

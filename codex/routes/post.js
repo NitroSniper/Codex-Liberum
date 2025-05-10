@@ -4,6 +4,7 @@ const router = express.Router();
 
 // get posts from database
 router.get('/get-posts', async (req, res) => {
+    console.log(req.headers);
     const name = req.query.name;
     const amount = req.query.amount;
     try {

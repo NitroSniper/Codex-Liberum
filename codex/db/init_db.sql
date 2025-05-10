@@ -21,7 +21,8 @@ CREATE TABLE sesh (
     session_token TEXT PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    expires_at TIMESTAMP NOT NULL
+    expires_at TIMESTAMP NOT NULL,
+    csrf_token TEXT NOT NULL
 );
 
 CREATE TABLE donations (
