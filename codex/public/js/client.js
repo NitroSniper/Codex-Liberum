@@ -139,10 +139,10 @@ function logout() {
 
 // for the create post
 function post(formData) {
-    fetch('/post', {
+    fetch('/post/create-post', {
         method: 'POST',
         headers: fetchDefaultHeaders,
-        body: formData,
+        body: JSON.stringify(Object.fromEntries(formData)),
     }).then((res) => {
        if (res.ok) {
            alert("Successfully created post");
