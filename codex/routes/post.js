@@ -1,7 +1,13 @@
 const express = require('express');
-const { query } = require('../db/db');
+const { pool } = require('../db/db');
 const router = express.Router();
 const { objectIsEmpty } = require('../models/util')
+let dots = require("../views/dots")
+
+router.get('/', (req, res) => {
+  console.log(req.csrfToken())
+  res.send(dots.createPost({csrf: req.csrfToken() }));
+});
 
 // get posts from database
 router.get('/get-posts', async (req, res) => {
@@ -21,10 +27,13 @@ router.get('/get-posts', async (req, res) => {
 // to create post
 router.get('/create-post', async (req, res) => {
 
-    const { title, category, content, photoUrl } = req.body;
+    const { title, category, content, photo } = req.body;
+    if (objectIsEmpty(req.session)) 
+        return res.status(400).send(dots.message({message:"Forbidden"}))
     const user = !objectIsEmpty(req.session);
     const createdBy = user.userID;
-    const baseUrl = process.env.codex_BASE_URL;
+    const baseIP = process.env.UPLOADS_IP;
+    const basePORT = process.env.UPLOADS_PORT;
     const uploadsSecret = process.env.UPLOADS_SECRET;
 
     // get the data from the form
@@ -51,7 +60,7 @@ router.get('/create-post', async (req, res) => {
             }
 
             const { path } = await uploadRes.json();
-            imageUrl = `${baseUrl}${path}`;
+            imageUrl = `${baseIP}${basePORT}${path}`;
         } catch (err) {
             console.error('Error calling uploads service:', err);
             return res.status(502).send('Image upload failed.');
@@ -66,11 +75,28 @@ router.get('/create-post', async (req, res) => {
            VALUES ($1,$2,$3,$4,$5)`,
             [title, category, content, imageUrl, createdBy]
         );
-        res.redirect('/create-post/submit');
+        res.redirect('/submit');
     } catch (err) {
         console.error('Create Post Error:', err);
         res.status(500).send('Could not create post.');
     }
+});
+
+router.get('/submit', (req, res) => {
+  // put this html in a .dot file
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>News blog - post created</title>
+    </head>
+    <body>
+      <h3>Your post has been created!</h3>
+      <p><a href="/dashboard">Go to index page</a></p>
+    </body>
+    </html>
+  `);
 });
 
 module.exports = router;

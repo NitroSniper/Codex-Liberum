@@ -5,7 +5,9 @@ services:
 #      - "3000:3000"
     environment:
       ARGON_PEPPER: secret_pepper
-      # UPLOADS_SECRET: uploadsSecret
+      UPLOADS_SECRET: uploadsSecret
+      UPLOADS_IP: codex
+      UPLOADS_PORT: 3001
     develop:
       watch:
         - action: sync+restart
@@ -18,7 +20,7 @@ services:
 #    ports: # use if it is necessary to expose the container to the host machine
 #      - "3000:3000"
     environment:
-      # UPLOADS_SECRET: uploadsSecret
+      UPLOADS_SECRET: uploadsSecret
     develop:
       watch:
         - action: sync+restart

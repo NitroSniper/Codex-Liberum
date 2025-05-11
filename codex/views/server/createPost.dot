@@ -9,8 +9,8 @@
     </header>
 
     <main>
-        <form action="/create-post/submit" method="POST">
-          <input type="hidden" name="_csrf" value="{{=it.csrfToken}}">
+        <form action="/create-post" method="POST">
+          
             <div>
               <label for="title">Title:</label>
               <input id="title" name="title" type="text" required maxlength="255">
@@ -39,8 +39,6 @@
             <input name="photo" id="photo" type="file" accept="image/jpeg,image/png,image/gif">
             <small>Max 2 MB; JPG/PNG/GIF only.</small>
             </div>
-            <!-- place to hold the url coming back from uploads.localhost -->
-            <input id="photoUrl" name="photoUrl" type="hidden">
             <button type="submit">Publish</button>
           </form>
           <script src="public/js/create-post.js"></script>
