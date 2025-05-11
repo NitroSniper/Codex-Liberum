@@ -2,8 +2,8 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 const fetchDefaultHeaders = {
     'X-CSRF-Token': csrfToken,
-    'Content-Type': 'application/json',
 }
+
 function ignore_form(func) {
     return function (event) {
         event.preventDefault()
@@ -16,6 +16,7 @@ async function populate_posts(formData) {
     const name = formData.get("query");
     await fetch_thumbnails(name, 4)
 }
+
 const _ = (html) => DOMPurify.sanitize(html);
 
 async function fetch_thumbnails(name, amount) {
@@ -26,7 +27,7 @@ async function fetch_thumbnails(name, amount) {
         headers: fetchDefaultHeaders
     })
     const posts = await response.json();
-    postsContainer.innerHTML = _(window.render.indexPost({ posts: posts }));
+    postsContainer.innerHTML = _(window.render.indexPost({posts: posts}));
 }
 
 
@@ -46,10 +47,10 @@ async function login(formData) {
                 window.location.href = '/';
             });
         } else {
-            loginForm.innerHTML = _(window.render.invalidLoginForm({ reason: data.message }));
+            loginForm.innerHTML = _(window.render.invalidLoginForm({reason: data.message}));
         }
     } catch (error) {
-        loginForm.innerHTML = _(window.render.invalidLoginForm({ reason: "Login request has failed." }));
+        loginForm.innerHTML = _(window.render.invalidLoginForm({reason: "Login request has failed."}));
     }
 }
 
@@ -69,11 +70,11 @@ async function register(formData) {
                 window.location.href = '/';
             })
         } else {
-            registerForm.innerHTML = _(window.render.invalidRegisterForm({ reason: data.message }));
+            registerForm.innerHTML = _(window.render.invalidRegisterForm({reason: data.message}));
         }
     } catch (error) {
         // ASSUMING REQUEST FAILED
-        registerForm.innerHTML = _(window.render.invalidRegisterForm({ reason: "register request has failed." }));
+        registerForm.innerHTML = _(window.render.invalidRegisterForm({reason: "register request has failed."}));
     }
 }
 
@@ -84,7 +85,7 @@ async function fetchUnverifiedUsers() {
         headers: fetchDefaultHeaders,
     });
     const users = await res.json();
-    moderatorUserList.innerHTML = _(window.render.moderatorUserList({ unverifiedUsers: users, length: users.length }));
+    moderatorUserList.innerHTML = _(window.render.moderatorUserList({unverifiedUsers: users, length: users.length}));
 }
 
 async function verifyUsers(formData) {
@@ -97,7 +98,7 @@ async function verifyUsers(formData) {
         const res = await fetch('/moderator/verify-users', {
             method: 'POST',
             headers: fetchDefaultHeaders,
-            body: JSON.stringify({ userIds })
+            body: JSON.stringify({userIds})
         });
         if (res.ok) {
             alert('Users verified successfully!');
@@ -113,7 +114,7 @@ async function verifyUsers(formData) {
 
 function waitForModalClose(modal) {
     return new Promise(resolve => {
-        modal.addEventListener('close', resolve, { once: true });
+        modal.addEventListener('close', resolve, {once: true});
     });
 }
 
@@ -139,16 +140,19 @@ function logout() {
 
 // for the create post
 function post(formData) {
+    console.log(Object.fromEntries(formData));
     fetch('/post/create-post', {
         method: 'POST',
-        headers: fetchDefaultHeaders,
-        body: JSON.stringify(Object.fromEntries(formData)),
+        headers: {
+            ...fetchDefaultHeaders
+        },
+        body: formData,
     }).then((res) => {
-       if (res.ok) {
-           alert("Successfully created post");
-       } else {
-           alert("Failed to create post");
-       }
+        if (res.ok) {
+            alert("Successfully created post");
+        } else {
+            alert("Failed to create post");
+        }
     })
 }
 
@@ -167,4 +171,5 @@ if (logoutLink) logoutLink.addEventListener('click', (e) => {
 if (postsContainer) fetch_thumbnails("", 4).then(r => {
 })
 
-if (moderatorUserList) fetchUnverifiedUsers().then(r => { })
+if (moderatorUserList) fetchUnverifiedUsers().then(r => {
+})

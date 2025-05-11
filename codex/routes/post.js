@@ -59,6 +59,8 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
     const basePORT = process.env.UPLOADS_PORT;
     const uploadsSecret = process.env.UPLOADS_SECRET;
 
+    console.log(req.body);
+
     // get the data from the form
     if (!title || !category || !content) {
         return res.status(400).send('Title, category, content required.');

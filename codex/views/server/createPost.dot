@@ -4,9 +4,17 @@
     <title>News Blog - Create Post</title>
 </head>
 <body>
-    <header>
-        <h2>Create a post</h2>
-        <dialog id="postConfirmDialog">
+<header>
+    <nav>
+        <a href="/">
+            <ul>
+                <li><h1><strong>Codex Liberum</strong></h1></li>
+                <li><i><small>Free for all</small></i></li>
+            </ul>
+        </a>
+        <ul></ul>
+    </nav>
+    <dialog id="postConfirmDialog">
         <article>
             <header>
                 <button aria-label="Close" onclick="postConfirmDialog.close()" rel="prev"></button>
@@ -19,40 +27,32 @@
             </p>
         </article>
     </dialog>
-    </header>
-
-    <main>
-        <form onsubmit="post_form(event)" id="post_form" enctype="multipart/form-data>
-            <div>
-              <label for="title">Title:</label>
-              <input id="title" name="title" type="text" required maxlength="255">
-            </div>
-            <div>
-              <label for="category">Category:</label>
-                <select id="category" name="category" required>
-                  <option value="">— Select a category —</option>
-                  <option value="scienceTech">Science & Technology</option>
-                  <option value="sports">Sports</option>
-                  <option value="health">Health</option>
-                  <option value="environment">Environment</option>
-                  <option value="politics">Politics</option>
-                  <option value="artsMusic">Arts & Music</option>
-                  <option value="weather">Weather</option>
-                  <option value="travel">Travel</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>              
-            <div>
-              <label for="content">Content:</label>
-              <textarea id="content" name="content" rows="20" required></textarea>
-            </div>
-            <div>
-            <label>Photo (optional):</label>
-            <input name="photo" id="photo" type="file" accept="image/jpeg,image/png,image/gif">
-            <small>Max 2 MB; JPG/PNG/GIF only.</small>
-            </div>
-            <button type="submit">Publish</button>
-          </form>
-    </main>
+</header>
+<main class="container" style="max-width:500px">
+    <h2>Create a post</h2>
+    <form onsubmit="post_form(event)" id="post_form" enctype="multipart/form-data">
+        <label for="title">Title:</label>
+        <input id="title" name="title" type="text" required maxlength="255">
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="">— Select a category —</option>
+            <option value="scienceTech">Science & Technology</option>
+            <option value="sports">Sports</option>
+            <option value="health">Health</option>
+            <option value="environment">Environment</option>
+            <option value="politics">Politics</option>
+            <option value="artsMusic">Arts & Music</option>
+            <option value="weather">Weather</option>
+            <option value="travel">Travel</option>
+            <option value="other">Other</option>
+        </select>
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" rows="20" required></textarea>
+        <label>Photo (optional):</label>
+        <input name="photo" id="photo" type="file" accept="image/jpeg,image/png,image/gif">
+        <small>Max 2 MB; JPG/PNG/GIF only.</small>
+        <button type="submit">Publish</button>
+    </form>
+</main>
 </body>
 </html>
