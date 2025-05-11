@@ -84,7 +84,7 @@ async function fetchUnverifiedUsers() {
         headers: fetchDefaultHeaders,
     });
     const users = await res.json();
-    moderatorUserList.innerHTML = _(window.render.moderatorUserList({unverifiedUsers: users, length: users.length}));
+    moderatorUserList.innerHTML = _(window.render.moderatorUserList({ unverifiedUsers: users, length: users.length }));
 }
 
 async function verifyUsers(formData) {
@@ -97,7 +97,7 @@ async function verifyUsers(formData) {
         const res = await fetch('/moderator/verify-users', {
             method: 'POST',
             headers: fetchDefaultHeaders,
-            body: JSON.stringify({userIds})
+            body: JSON.stringify({ userIds })
         });
         if (res.ok) {
             alert('Users verified successfully!');
@@ -137,6 +137,29 @@ function logout() {
     });
 }
 
+// for the create post
+function post(formData) {
+    fetch('/post', {
+        method: 'POST',
+        headers: fetchDefaultHeaders,
+        body: formData,
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(res.statusText);
+        return res.json();
+    })
+    .then(z => {
+        postConfirmDialog.showModal();
+        waitForModalClose(postConfirmDialog).then(() => {
+            window.location.href = '/';
+        })
+    })
+    .catch(err => {
+        console.error('Create post failed:', err);
+        alert('Failed to create post: ' + err.message);
+    });
+}
+
 // decorate forms
 const search_form = ignore_form(populate_posts)
 const login_form = ignore_form(login)
@@ -151,4 +174,4 @@ if (logoutLink) logoutLink.addEventListener('click', (e) => {
 if (postsContainer) fetch_thumbnails("", 4).then(r => {
 })
 
-if (moderatorUserList) fetchUnverifiedUsers().then(r => {})
+if (moderatorUserList) fetchUnverifiedUsers().then(r => { })

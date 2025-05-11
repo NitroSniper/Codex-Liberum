@@ -3,10 +3,33 @@ const { pool } = require('../db/db');
 const router = express.Router();
 const { objectIsEmpty } = require('../models/util')
 let dots = require("../views/dots")
+const multer = require('multer');
 
+// for file upload 
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+  fileFilter: (_req, file, cb) => {
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedExts = ['.jpg', '.jpeg', '.png', '.gif'];
+    const ext = path.extname(file.originalname).toLowerCase();
+
+    if (!allowedExts.includes(ext)) {
+      return cb(new Error('Only JPG, PNG & GIF extensions allowed'), false);
+    }
+    if (!allowedMimes.includes(file.mimetype)) {
+      return cb(new Error('Invalid MIME type'), false);
+    }
+    cb(null, true);
+  }} )
+
+// get the page
 router.get('/', (req, res) => {
-  console.log(req.csrfToken())
-  res.send(dots.createPost({csrf: req.csrfToken() }));
+
+    //   console.log(req.csrfToken())
+    if (objectIsEmpty(req.session) || !req.session.userID)
+        return res.status(400).send(dots.message({ message: "Forbidden" }))
+    res.send(dots.createPost({ csrf: req.csrfToken() }));
 });
 
 // get posts from database
@@ -25,13 +48,13 @@ router.get('/get-posts', async (req, res) => {
 });
 
 // to create post
-router.get('/create-post', async (req, res) => {
+router.post('/create-post', upload.single('photo'), async (req, res) => {
 
-    const { title, category, content, photo } = req.body;
-    if (objectIsEmpty(req.session)) 
-        return res.status(400).send(dots.message({message:"Forbidden"}))
-    const user = !objectIsEmpty(req.session);
-    const createdBy = user.userID;
+    const { title, category, content} = req.body;
+    if (objectIsEmpty(req.session) || !req.session.userID)
+        return res.status(403).send(dots.message({ message: "Forbidden" }))
+    // const user = !objectIsEmpty(req.session);
+    const createdBy = req.session.userID;
     const baseIP = process.env.UPLOADS_IP;
     const basePORT = process.env.UPLOADS_PORT;
     const uploadsSecret = process.env.UPLOADS_SECRET;
@@ -39,6 +62,12 @@ router.get('/create-post', async (req, res) => {
     // get the data from the form
     if (!title || !category || !content) {
         return res.status(400).send('Title, category, content required.');
+    }
+
+    // Convert to base64 to use JSON
+    let photoBase64 = null;
+    if (req.file) {
+      photoBase64 = req.file.buffer.toString('base64'); // not sure 
     }
 
     // send the image data to uplods subdomain
@@ -75,28 +104,10 @@ router.get('/create-post', async (req, res) => {
            VALUES ($1,$2,$3,$4,$5)`,
             [title, category, content, imageUrl, createdBy]
         );
-        res.redirect('/submit');
     } catch (err) {
         console.error('Create Post Error:', err);
         res.status(500).send('Could not create post.');
     }
-});
-
-router.get('/submit', (req, res) => {
-  // put this html in a .dot file
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <title>News blog - post created</title>
-    </head>
-    <body>
-      <h3>Your post has been created!</h3>
-      <p><a href="/dashboard">Go to index page</a></p>
-    </body>
-    </html>
-  `);
 });
 
 module.exports = router;

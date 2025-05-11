@@ -1,16 +1,28 @@
 <html lang="en">
 <head>
+    {{#def.head}}
     <title>News Blog - Create Post</title>
-    <meta charset="utf-8">
 </head>
 <body>
     <header>
         <h2>Create a post</h2>
+        <dialog id="postConfirmDialog">
+        <article>
+            <header>
+                <button aria-label="Close" onclick="postConfirmDialog.close()" rel="prev"></button>
+                <p>
+                    <strong>Your post has been created</strong>
+                </p>
+            </header>
+            <p>
+                post ok
+            </p>
+        </article>
+    </dialog>
     </header>
 
     <main>
-        <form action="/create-post" method="POST">
-          
+        <form onsubmit="post_form(event)" id="post_form" enctype="multipart/form-data>
             <div>
               <label for="title">Title:</label>
               <input id="title" name="title" type="text" required maxlength="255">
@@ -41,7 +53,6 @@
             </div>
             <button type="submit">Publish</button>
           </form>
-          <script src="public/js/create-post.js"></script>
     </main>
 </body>
 </html>

@@ -50,7 +50,7 @@ app.post(
     }
     const fileUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
     // res.json({ url: fileUrl });
-    res.json({ path: `/images/${filename}` })
+    res.json({ path: `/images/${fileUrl}` })
   }
 );
 
