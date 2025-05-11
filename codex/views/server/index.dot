@@ -22,7 +22,7 @@
             {{?}}
             {{? it.verified}}
             <li>
-                <a href="/" class="secondary">Create Post (TODO)</a>
+                <a href="/create-post" class="secondary">Create Post (TODO)</a>
             </li>
             {{?}}
             {{? it.logout }}

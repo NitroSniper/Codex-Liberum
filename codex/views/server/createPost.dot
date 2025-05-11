@@ -6,15 +6,11 @@
 <body>
     <header>
         <h2>Create a post</h2>
-        <nav>
-            <ul>
-                <li><a href="/dashboard">Home</a></li>
-            </ul>
-        </nav>
     </header>
 
     <main>
-        <form action="/create-post/submit" method="POST" enctype="multipart/form-data">
+        <form action="/create-post/submit" method="POST">
+          <input type="hidden" name="_csrf" value="{{=it.csrfToken}}">
             <div>
               <label for="title">Title:</label>
               <input id="title" name="title" type="text" required maxlength="255">
