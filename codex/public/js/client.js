@@ -143,21 +143,13 @@ function post(formData) {
         method: 'POST',
         headers: fetchDefaultHeaders,
         body: formData,
+    }).then((res) => {
+       if (res.ok) {
+           alert("Successfully created post");
+       } else {
+           alert("Failed to create post");
+       }
     })
-    .then(res => {
-        if (!res.ok) throw new Error(res.statusText);
-        return res.json();
-    })
-    .then(z => {
-        postConfirmDialog.showModal();
-        waitForModalClose(postConfirmDialog).then(() => {
-            window.location.href = '/';
-        })
-    })
-    .catch(err => {
-        console.error('Create post failed:', err);
-        alert('Failed to create post: ' + err.message);
-    });
 }
 
 // decorate forms
@@ -165,6 +157,7 @@ const search_form = ignore_form(populate_posts)
 const login_form = ignore_form(login)
 const register_form = ignore_form(register)
 const verify_user_form = ignore_form(verifyUsers)
+const post_form = ignore_form(post)
 
 if (logoutLink) logoutLink.addEventListener('click', (e) => {
     e.preventDefault(); // Prevents default link behavior
