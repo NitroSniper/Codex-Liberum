@@ -63,6 +63,7 @@ app.get('/', (_req, res) => {
 app.use((err, _req, res, _next) => {
   res.status(400).json({ error: err.message });
 });
+app.use("/images", express.static(path.join(__dirname, 'public', 'images')));
 
 
 app.listen(port, () => {

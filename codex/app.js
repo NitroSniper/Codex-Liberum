@@ -4,7 +4,6 @@ const app = express()
 const port = 3000
 const dots = require('./views/dots');
 
-const { sessionMiddleware } = require('./models/auth');
 
 /* Import Routes */
 const { router: middlewareRouter }  = require('./routes/middleware');

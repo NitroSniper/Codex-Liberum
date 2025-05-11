@@ -7,7 +7,7 @@ function generateSessionToken() {
 }
 
 
-const keepAliveSessionTimestamp = () => new Date(Date.now() + 2000 * 60 * 1000); // 3 minute from now
+const keepAliveSessionTimestamp = () => new Date(Date.now() + 20 * 60 * 1000); // 3 minute from now
 
 async function createSession(req, userId) {
     const token = generateSessionToken();

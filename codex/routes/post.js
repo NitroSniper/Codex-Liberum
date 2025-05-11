@@ -77,15 +77,16 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
 
     try {
         let formData = new FormData();
-        formData.append("file", new File(req.file.buffer, req.file.originalname));
-        console.log(await fetch("http://codex:3001/"))
-        // const uploadURLRes = await fetch(`http://codex:3001/upload`, {
-        //     method: 'POST',
-        //     headers: {
-        //         'X-Uploads-Secret': uploadsSecret
-        //     },
-        //     body: formData
-        // });
+        console.log(typeof req.file.buffer)
+        formData.append("image", new File(req.file.buffer, req.file.originalname, { type: 'image/jpeg' }));
+        console.log(Object.fromEntries(formData));
+        const uploadURLRes = await fetch(`http://uploads:3001/upload`, {
+            method: 'POST',
+            headers: {
+                'X-Uploads-Secret': uploadsSecret
+            },
+            body: formData
+        });
 
         console.log(uploadURLRes);
 
