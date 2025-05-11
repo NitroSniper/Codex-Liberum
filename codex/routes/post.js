@@ -1,5 +1,5 @@
 const express = require('express');
-const {pool} = require('../db/db');
+const {query} = require('../db/db');
 const router = express.Router();
 const path = require('path');
 const {objectIsEmpty} = require('../models/util')
@@ -78,9 +78,9 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
     try {
         let formData = new FormData();
         console.log(typeof req.file.buffer)
-        formData.append("image", new File(req.file.buffer, req.file.originalname, { type: 'image/jpeg' }));
+        formData.append("image", new File([new Uint8Array(req.file.buffer)], req.file.originalname, { type: 'image/jpeg' }));
         console.log(Object.fromEntries(formData));
-        const uploadURLRes = await fetch(`http://uploads:3001/upload`, {
+        const uploadURLRes = await fetch(`http://${baseIP}:${basePort}/upload`, {
             method: 'POST',
             headers: {
                 'X-Uploads-Secret': uploadsSecret
@@ -90,15 +90,13 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
 
         console.log(uploadURLRes);
 
-        return new Error("fuck");
-
         if (!uploadURLRes.ok) {
             console.error('Upload service error:', uploadURLRes.status, await uploadURLRes.text());
             return res.status(uploadURLRes.status).send('Image upload failed.');
         }
 
         const {path} = await uploadURLRes.json();
-        imageUrl = `${baseIP}${basePORT}${path}`;
+        imageUrl = `${baseIP}${basePort}${path}`;
     } catch (err) {
         console.error('Error calling uploads service:', err);
         return res.status(502).send('Image upload failed.');
@@ -107,7 +105,7 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
 
     // save data onto the db
     try {
-        await pool.query(
+        await query(
             `INSERT INTO posts (title, category, content, image_url, created_by)
              VALUES ($1, $2, $3, $4, $5)`,
             [title, category, content, imageUrl, createdBy]

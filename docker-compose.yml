@@ -6,7 +6,7 @@ services:
     environment:
       ARGON_PEPPER: secret_pepper
       UPLOADS_SECRET: uploadsSecret
-      UPLOADS_IP: codex
+      UPLOADS_IP: uploads
       UPLOADS_PORT: 3001
     develop:
       watch:
@@ -17,8 +17,8 @@ services:
             - node_modules/
   uploads:
     build: ./uploads
-    ports: # use if it is necessary to expose the container to the host machine
-      - "3001:3001"
+#    ports: # use if it is necessary to expose the container to the host machine
+#      - "3001:3001"
     environment:
       UPLOADS_SECRET: uploadsSecret
     develop:
