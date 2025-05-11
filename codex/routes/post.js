@@ -48,7 +48,8 @@ router.get('/get-posts', async (req, res) => {
 });
 
 // to create post
-router.post('/create-post', upload.single('photo'), async (req, res) => {
+router.post('/create-post', async (req, res) => {
+    console.log(req.body);
 
     const { title, category, content} = req.body;
     if (objectIsEmpty(req.session) || !req.session.userID)
@@ -59,7 +60,6 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
     const basePORT = process.env.UPLOADS_PORT;
     const uploadsSecret = process.env.UPLOADS_SECRET;
 
-    console.log(req.body);
 
     // get the data from the form
     if (!title || !category || !content) {

@@ -2,6 +2,7 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 const fetchDefaultHeaders = {
     'X-CSRF-Token': csrfToken,
+    'Content-Type': 'application/json',
 }
 
 function ignore_form(func) {
@@ -141,11 +142,11 @@ function logout() {
 // for the create post
 function post(formData) {
     console.log(Object.fromEntries(formData));
+    const imageHeader = { ...fetchDefaultHeaders };
+    imageHeader.delete('Content-Type');
     fetch('/post/create-post', {
         method: 'POST',
-        headers: {
-            ...fetchDefaultHeaders
-        },
+        headers: imageHeader,
         body: formData,
     }).then((res) => {
         if (res.ok) {
