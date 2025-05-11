@@ -143,7 +143,7 @@ function logout() {
 function post(formData) {
     console.log(Object.fromEntries(formData));
     const imageHeader = { ...fetchDefaultHeaders };
-    imageHeader.delete('Content-Type');
+    delete imageHeader['Content-Type'];
     fetch('/post/create-post', {
         method: 'POST',
         headers: imageHeader,

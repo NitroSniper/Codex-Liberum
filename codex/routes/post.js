@@ -1,35 +1,37 @@
 const express = require('express');
-const { pool } = require('../db/db');
+const {pool} = require('../db/db');
 const router = express.Router();
-const { objectIsEmpty } = require('../models/util')
+const path = require('path');
+const {objectIsEmpty} = require('../models/util')
 let dots = require("../views/dots")
 const multer = require('multer');
 
 // for file upload 
-const storage = multer.memoryStorage()
-const upload = multer({ storage: storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
-  fileFilter: (_req, file, cb) => {
-    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
-    const allowedExts = ['.jpg', '.jpeg', '.png', '.gif'];
-    const ext = path.extname(file.originalname).toLowerCase();
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {fileSize: 2 * 1024 * 1024}, // 2 MB
+    fileFilter: (_req, file, cb) => {
+        const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        const allowedExts = ['.jpg', '.jpeg', '.png', '.gif'];
+        const ext = path.extname(file.originalname).toLowerCase();
 
-    if (!allowedExts.includes(ext)) {
-      return cb(new Error('Only JPG, PNG & GIF extensions allowed'), false);
+        if (!allowedExts.includes(ext)) {
+            return cb(new Error('Only JPG, PNG & GIF extensions allowed'), false);
+        }
+        if (!allowedMimes.includes(file.mimetype)) {
+            return cb(new Error('Invalid MIME type'), false);
+        }
+        cb(null, true);
     }
-    if (!allowedMimes.includes(file.mimetype)) {
-      return cb(new Error('Invalid MIME type'), false);
-    }
-    cb(null, true);
-  }} )
+})
 
 // get the page
 router.get('/', (req, res) => {
 
     //   console.log(req.csrfToken())
     if (objectIsEmpty(req.session) || !req.session.userID)
-        return res.status(400).send(dots.message({ message: "Forbidden" }))
-    res.send(dots.createPost({ csrf: req.csrfToken() }));
+        return res.status(400).send(dots.message({message: "Forbidden"}))
+    res.send(dots.createPost({csrf: req.csrfToken()}));
 });
 
 // get posts from database
@@ -43,59 +45,62 @@ router.get('/get-posts', async (req, res) => {
     } catch (error) {
         console.error('Error fetching posts:', error);
         // should be bad
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
 
 // to create post
-router.post('/create-post', async (req, res) => {
-    console.log(req.body);
+router.post('/create-post', upload.single('photo'), async (req, res) => {
 
-    const { title, category, content} = req.body;
-    if (objectIsEmpty(req.session) || !req.session.userID)
-        return res.status(403).send(dots.message({ message: "Forbidden" }))
+    const {title, category, content} = req.body;
+    if (objectIsEmpty(req.session) || !req.session.isVerified)
+        return res.status(403).send(dots.message({message: "Forbidden"}))
     // const user = !objectIsEmpty(req.session);
     const createdBy = req.session.userID;
     const baseIP = process.env.UPLOADS_IP;
-    const basePORT = process.env.UPLOADS_PORT;
+    const basePort = process.env.UPLOADS_PORT;
     const uploadsSecret = process.env.UPLOADS_SECRET;
 
+    console.log(req.body);
+    console.log(req.file)
 
     // get the data from the form
-    if (!title || !category || !content) {
-        return res.status(400).send('Title, category, content required.');
+    if (!title || !category || !content || !req.file) {
+        return res.status(400).send('Title, category, content, and thumbnail required.');
     }
 
-    // Convert to base64 to use JSON
-    let photoBase64 = null;
-    if (req.file) {
-      photoBase64 = req.file.buffer.toString('base64'); // not sure 
-    }
+    // // Convert to base64 to use JSON
+    // let photoBase64 = null;
+    // if (req.file) {
+    //     photoBase64 = req.file.buffer.toString('base64'); // not sure
+    // }
 
-    // send the image data to uplods subdomain
-    let imageUrl = null;
-    if (photo) {
-        try {
-            const uploadRes = await fetch('http://uploads:3001/uploads', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Uploads-Secret': uploadsSecret
-                },
-                body: JSON.stringify({ photo })
-            });
+    try {
+        let formData = new FormData();
+        formData.append("file", new File(req.file.buffer, req.file.originalname));
+        console.log(await fetch("http://codex:3001/"))
+        // const uploadURLRes = await fetch(`http://codex:3001/upload`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'X-Uploads-Secret': uploadsSecret
+        //     },
+        //     body: formData
+        // });
 
-            if (!uploadRes.ok) {
-                console.error('Upload service error:', uploadRes.status, await uploadRes.text());
-                return res.status(uploadRes.status).send('Image upload failed.');
-            }
+        console.log(uploadURLRes);
 
-            const { path } = await uploadRes.json();
-            imageUrl = `${baseIP}${basePORT}${path}`;
-        } catch (err) {
-            console.error('Error calling uploads service:', err);
-            return res.status(502).send('Image upload failed.');
+        return new Error("fuck");
+
+        if (!uploadURLRes.ok) {
+            console.error('Upload service error:', uploadURLRes.status, await uploadURLRes.text());
+            return res.status(uploadURLRes.status).send('Image upload failed.');
         }
+
+        const {path} = await uploadURLRes.json();
+        imageUrl = `${baseIP}${basePORT}${path}`;
+    } catch (err) {
+        console.error('Error calling uploads service:', err);
+        return res.status(502).send('Image upload failed.');
     }
     // const url = await fetch("https://uploads:3001/uploads")
 
@@ -103,7 +108,7 @@ router.post('/create-post', async (req, res) => {
     try {
         await pool.query(
             `INSERT INTO posts (title, category, content, image_url, created_by)
-           VALUES ($1,$2,$3,$4,$5)`,
+             VALUES ($1, $2, $3, $4, $5)`,
             [title, category, content, imageUrl, createdBy]
         );
     } catch (err) {
