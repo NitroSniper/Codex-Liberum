@@ -1,0 +1,17 @@
+<form id="verify2FaForm" onsubmit="verify2fa_form(event)">
+  <input type="hidden" name="_csrf" value="{{=it.csrf}}" />
+
+  <label for="token">Enter the 6-digit code from your authenticator app:</label>
+  <input
+    type="text"
+    name="token"
+    required
+    pattern="[0-9]{6}"
+    maxlength="6"
+    inputmode="numeric"
+    aria-invalid="true"
+  />
+
+  <small>{{=it.reason}}</small>
+  <button type="submit">Verify</button>
+</form>

@@ -18,7 +18,8 @@ const ignoredPaths = [
 ]
 
 const getTokenFromState = (req) => objectIsEmpty(req.session) ? null : req.session.csrfToken;
-const getTokenFromRequest = (req) => req.headers['x-csrf-token'];
+//const getTokenFromRequest = (req) => req.headers['x-csrf-token'];
+const getTokenFromRequest = (req) => req.body?._csrf || req.headers['x-csrf-token']; // to read the token from req body under _csrf
 const isRequestValid = (req) => getTokenFromRequest(req) === getTokenFromState(req);
 const generateTokenHash = () => randomBytes(128).toString("base64");
 const requiresCSRFProtection = (req) => !(ignoredMethods.includes(req.method) || ignoredPaths.includes(req.path));

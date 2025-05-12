@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{#def.head}}
+    <title>Verify 2 Factor</title>
+    <script type="text/javascript" src="/public/view/invalidVerify2faForm.js"></script>
+</head>
+<body>
+<header class="container">
+    <nav>
+        <a href="/">
+            <ul>
+                <li><h1><strong>Codex Liberum</strong></h1></li>
+                <li><i><small>Free for all</small></i></li>
+            </ul>
+        </a>
+        <ul>
+            <li><a href="/auth/login" class="secondary">Login</a></li>
+            <li><a href="/auth/register" class="contrast">Register</a></li>
+            <li>
+                <button href="/donate" class="contrast">Donate</button>
+            </li>
+        </ul>
+    </nav>
+    <dialog id="welcomeDialog">
+        <article>
+            <header>
+                <button aria-label="Close" onclick="welcomeDialog.close()" rel="prev"></button>
+                <p>
+                    <strong>🗓️ You have Logged In!</strong>
+                </p>
+            </header>
+            <p>
+                <strong>Welcome to Codex Liberum. <br></strong>
+                You are now entering a secure platform dedicated to transparency and the free flow of information. Here,
+                your commitment to truth and accountability finds a powerful ally. Please handle all materials with
+                care,
+                verify sources rigorously, and remember: the integrity of your work protects those who risk everything
+                to
+                share the truth.
+            </p>
+        </article>
+    </dialog>
+</header>
+<main class="container center-viewport">
+    <div class="center-box">
+      <h2>Two-Factor Authentication</h2>
+
+      <div id="verify2faFormBlock">
+        <form id="verify2FaForm" onsubmit="verify2fa_form(event)">
+          <input type="hidden" name="_csrf" value="{{=it.csrf}}" />
+
+          <label for="token">Enter the 6-digit code from your authenticator app:</label>
+          <input
+            type="text"
+            name="token"
+            required
+            pattern="[0-9]{6}"
+            maxlength="6"
+            inputmode="numeric"
+          />
+
+          <button type="submit">Verify</button>
+        </form>
+
+        {{? it.error}}
+          <p style="color:red; margin-top:1rem;">{{=it.error}}</p>
+        {{?}}
+      </div> <!-- /#verify2faFormBlock -->
+    </div>
+  </main>
+<script defer src="/public/view/handler2fa.js"></script>
+</body>
+</html>

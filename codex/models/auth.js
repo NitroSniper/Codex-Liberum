@@ -56,21 +56,17 @@ async function registerUser(username, password) {
 // Authenticate a user during login
 async function loginUser(username, password) {
     try {
-        const result = await query('SELECT id, hashed_password, ismoderator FROM users WHERE username = $1', [username]);
-        const rows = result.rows;
-        if (rows.length === 0) {
-            return null; // give generic error msg
-        }
-        const user = rows[0];
-        if (await argon2.verify(user.hashed_password, password, argon_opts)) {
-            return user.id;
-        }
+        const result = await query('SELECT id, username, hashed_password, ismoderator, isverified, two_factor_enabled, two_factor_secret FROM users WHERE username = $1', [username]);
+        const user = result.rows[0];
+        if (!user) return null; // give generic error msg
+
+        const valid = await argon2.verify(user.hashed_password, password, argon_opts);
+        return valid ? user : null; // added to return the user object 
     } catch (error) {
         console.error("Error during user login:", error);
+        return null;
     }
-    return null;
 }
-
 
 
 async function verifySession(req, res, next) {

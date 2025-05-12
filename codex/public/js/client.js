@@ -5,6 +5,22 @@ const fetchDefaultHeaders = {
     'Content-Type': 'application/json',
 }
 
+const welcomeDialog = document.getElementById('welcomeDialog');
+const registerDialog = document.getElementById('registerDialog');
+const postsContainer = document.getElementById("posts");
+const loginForm = document.getElementById('loginForm');
+const logoutForm = document.getElementById('logoutForm');
+const registerForm = document.getElementById('registerForm');
+const moderatorUserList = document.getElementById('userListContainer');
+const setup2faContainer = document.getElementById('setup2faContainer');
+const verify2faContainer = document.getElementById('verify2faContainer');
+const setupBlock = document.getElementById('setup2faFormBlock');
+const verifyBlock = document.getElementById('verify2faFormBlock');
+const verifyButton = document.getElementById('verifyButton');
+const logoutLink = document.getElementById('logoutLink');
+
+
+
 function ignore_form(func) {
     return function (event) {
         event.preventDefault()
@@ -40,18 +56,22 @@ async function login(formData) {
             body: JSON.stringify(Object.fromEntries(formData)),
         });
 
-        // Checks if the response status is not ok, if there is an error an exception is thrown
+        // Checks if the response status is not ok, if there is an error an exemption is thrown
         const data = await response.json();
+        if (data.redirectTo) { // If the server included a redirectTo, follow it
+            window.location.href = data.redirectTo;
+            return;
+        }
         if (response.ok) {
             welcomeDialog.showModal();
             waitForModalClose(welcomeDialog).then(() => {
-                window.location.href = '/';
+                window.location.href = '/'; // If no redirct - go to index page
             });
-        } else {
-            loginForm.innerHTML = _(window.render.invalidLoginForm({reason: data.message}));
+            return;
         }
+        loginForm.innerHTML = _(window.render.invalidLoginForm({ reason: data.message }));
     } catch (error) {
-        loginForm.innerHTML = _(window.render.invalidLoginForm({reason: "Login request has failed."}));
+        loginForm.innerHTML = _(window.render.invalidLoginForm({ reason: "Login request has failed." }));
     }
 }
 
@@ -79,6 +99,87 @@ async function register(formData) {
     }
 }
 
+async function setup2FAForm(formData) {
+    try {
+        const response = await fetch('/auth/setup-2fa', {
+            method: 'POST',
+            headers: fetchDefaultHeaders,
+            body: JSON.stringify({ token: formData.get('token') }),
+        });
+
+        // Follow redirect on success
+        if (!response.url.endsWith('/auth/setup-2fa')) {
+            window.location.href = response.url;
+            return;
+        }
+
+        // On error, extract server-rendered error message
+        const html = await response.text();
+        const documentFragment = new DOMParser().parseFromString(html, 'text/html'); // takes an HTML string and produces a document object
+        const errorElementText = documentFragment // error message 
+            .querySelector('#setup2faFormBlock p')
+            ?.textContent
+            .trim() || 'Invalid code';
+
+        setup2faFormBlock.innerHTML = _(window.render.invalidSetup2faForm({ csrf: csrfToken, secret: window.qrSecret, qrImage: window.qrImage, reason: errorElementText }));
+
+    } catch (error) {
+        // if request failed
+        setup2faFormBlock.innerHTML = _(window.render.invalidSetup2faForm({ csrf: csrfToken, secret: window.qrSecret, qrImage: window.qrImage, reason: error.message || 'Request failed.' }));
+        alert(error.message || 'Request failed.');
+    }
+}
+
+
+// Verify-2FA handler
+async function verify2FAForm(formData) {
+    try {
+        const response = await fetch('/auth/verify-2fa', {
+            method: 'POST',
+            headers: fetchDefaultHeaders,
+            body: JSON.stringify({ token: formData.get('token') }),
+        });
+
+        // Follow redirect on success
+        if (!response.url.endsWith('/auth/verify-2fa')) {
+            window.location.href = response.url;
+            return;
+        }
+
+        // On error, extract server-rendered error message
+        const html = await response.text();
+        const documentFragment = new DOMParser().parseFromString(html, 'text/html');
+        const errorElementText = documentFragment
+            .querySelector('#verify2faFormBlock p')
+            ?.textContent
+            .trim() || 'Invalid code';
+
+        verify2faFormBlock.innerHTML = _(window.render.invalidVerify2faForm({ csrf: csrfToken, reason: errorElementText }));
+    } catch (error) {
+        // if request failed
+        verify2faFormBlock.innerHTML = _(window.render.invalidVerify2faForm({ csrf: csrfToken, reason: error.message || 'Request failed.' }));
+        alert(error.message || 'Request failed.');
+    }
+}
+
+// Wire up the form submits
+if (setupBlock) {
+    setupBlock.addEventListener('submit', event => {
+        if (event.target.id === 'setup2faForm') {
+            event.preventDefault();
+            setup2FAForm(new FormData(event.target));
+        }
+    });
+}
+
+if (verifyBlock) {
+    verifyBlock.addEventListener('submit', event => {
+        if (event.target.id === 'verify2faForm') {
+            event.preventDefault();
+            verify2FAForm(new FormData(event.target));
+        }
+    });
+}
 
 // Verify function
 async function fetchUnverifiedUsers() {
@@ -119,16 +220,6 @@ function waitForModalClose(modal) {
     });
 }
 
-const welcomeDialog = document.getElementById('welcomeDialog');
-const registerDialog = document.getElementById('registerDialog');
-const postsContainer = document.getElementById("posts");
-const loginForm = document.getElementById('loginForm');
-const logoutForm = document.getElementById('logoutForm');
-const registerForm = document.getElementById('registerForm');
-const moderatorUserList = document.getElementById('userListContainer');
-const verifyButton = document.getElementById('verifyButton');
-const logoutLink = document.getElementById('logoutLink');
-
 // conditional actions
 function logout() {
     fetch('/auth/logout', {
@@ -163,6 +254,11 @@ const login_form = ignore_form(login)
 const register_form = ignore_form(register)
 const verify_user_form = ignore_form(verifyUsers)
 const post_form = ignore_form(post)
+const setup2fa_form = ignore_form(setup2FAForm);
+const verify2fa_form = ignore_form(verify2FAForm);
+
+if (setup2faContainer) setup2faContainer.addEventListener('submit', setup2fa_form);
+if (verify2faContainer) verify2faContainer.addEventListener('submit', verify2fa_form);
 
 if (logoutLink) logoutLink.addEventListener('click', (e) => {
     e.preventDefault(); // Prevents default link behavior

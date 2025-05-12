@@ -3,6 +3,8 @@ const path = require('path');
 const app = express()
 const port = 3000
 const dots = require('./views/dots');
+const QRCode = require('qrcode');
+const speakeasy = require('speakeasy');
 
 
 /* Import Routes */

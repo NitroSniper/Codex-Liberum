@@ -1,0 +1,17 @@
+<form id="setup2FaForm" onsubmit="setup2fa_form(event)">
+  <input type="hidden" name="_csrf" value="{{=it.csrf}}" />
+
+  <label for="token">Enter 6-digit code from app:</label>
+  <input
+    type="text"
+    name="token"
+    required
+    pattern="[0-9]{6}"
+    maxlength="6"
+    inputmode="numeric"
+    aria-invalid="true"
+  />
+
+  <small>{{=it.reason}}</small>
+  <button type="submit">Enable 2FA</button>
+</form>
