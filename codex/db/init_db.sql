@@ -3,7 +3,7 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE NOT NULL,
     hashed_password TEXT NOT NULL,
     isVerified BOOLEAN DEFAULT FALSE,
-    isModerator BOOLEAN DEFAULT FALSE
+    isModerator BOOLEAN DEFAULT FALSE,
     two_factor_temp_secret TEXT,
     two_factor_secret TEXT,
     two_factor_enabled BOOLEAN DEFAULT FALSE NOT NULL
