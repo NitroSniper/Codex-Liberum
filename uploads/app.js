@@ -20,6 +20,12 @@ const storage = multer.diskStorage({
   }
 });
 
+app.use((req, res, next) => {
+    res.set('Cross-Origin-Resource-Policy', 'same-origin');
+    res.set('Access-Control-Allow-Origin', 'https://localhost');
+    next()
+});
+
 const upload = multer({
   storage,
   limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
@@ -48,9 +54,10 @@ app.post(
     if (!provided || provided !== expected) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const fileUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+    // const fileUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+    const fileUrl = `https://uploads.localhost/images/${req.file.filename}`;
     // res.json({ url: fileUrl });
-    res.json({ path: `/images/${fileUrl}` })
+    res.json({ path: `${fileUrl}` })
   }
 );
 

@@ -25,8 +25,27 @@ const upload = multer({
     }
 })
 
+router.get('/blog/:postId', async (req, res) => {
+    try{
+        const data = await query(
+            `SELECT content, title, created, created_by FROM posts WHERE id=$1`, [req.params.postId]    
+        );
+    if (data.rows.length === 1) {
+        console.log("asdfsadfsafsadfsdffsdafsdfdsafds",data.rows.content);
+        res.send(dots.post({csrf: req.csrfToken(), post: await json.stringify(data.rows)}))
+    } else {
+        res.status(404).send(dots.message({csrf: req.csrfToken(), message: "Post Doesn't Exist"}))
+    }
+} catch (err) {
+    console.error('Error with getting post', err);
+    res.status(400).send(dots.message({csrf: req.csrfToken(), message: "Bad Request"}))
+}
+    
+});
+
+
 // get the page
-router.get('/', (req, res) => {
+router.get('/create-post', (req, res) => {
 
     //   console.log(req.csrfToken())
     if (objectIsEmpty(req.session) || !req.session.userID)
@@ -40,7 +59,8 @@ router.get('/get-posts', async (req, res) => {
     const name = req.query.name;
     const amount = req.query.amount;
     try {
-        const result = await query('SELECT title, username FROM posts INNER JOIN users on posts.created_by = users.id WHERE title LIKE $1 ORDER BY "created" DESC LIMIT $2', [`%${name}%`, amount]);
+        // const result = await query('SELECT title, username FROM posts INNER JOIN users on posts.created_by = users.id WHERE title LIKE $1 ORDER BY "created" DESC LIMIT $2', [`%${name}%`, amount]);
+        const result = await query('SELECT posts.id, title, category, image_url, username FROM posts INNER JOIN users on posts.created_by = users.id WHERE title ILIKE $1 ORDER BY "created" DESC LIMIT $2', [`%${name}%`, amount]);
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching posts:', error);
@@ -96,7 +116,9 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
         }
 
         const {path} = await uploadURLRes.json();
-        imageUrl = `${baseIP}${basePort}${path}`;
+        console.log(path);
+        // imageUrl = `http://${baseIP}.localhost/${path}`;
+        imageUrl = `${path}`;
     } catch (err) {
         console.error('Error calling uploads service:', err);
         return res.status(502).send('Image upload failed.');
@@ -108,8 +130,10 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
         await query(
             `INSERT INTO posts (title, category, content, image_url, created_by)
              VALUES ($1, $2, $3, $4, $5)`,
-            [title, category, content, imageUrl, createdBy]
+            [title, category, content, imageUrl, createdBy]    
         );
+        // alert("Successfully created post");
+        res.redirect('/');
     } catch (err) {
         console.error('Create Post Error:', err);
         res.status(500).send('Could not create post.');

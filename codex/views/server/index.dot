@@ -2,7 +2,7 @@
 <head>
     {{#def.head}}
     <title>News Blog - Post Content</title>
-    <script type="text/javascript" src="/public/view/indexPost.js"></script>
+    <script type="text/javascript" src="/public/view/indexPost.js" defer></script>
 </head>
 <body>
 <header class="container">
@@ -22,7 +22,7 @@
             {{?}}
             {{? it.verified}}
             <li>
-                <a href="/post" class="secondary">Create Post</a>
+                <a href="/post/create-post" class="secondary">Create Post</a>
             </li>
             {{?}}
             {{? it.logout }}
