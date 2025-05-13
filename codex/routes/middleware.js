@@ -8,6 +8,7 @@ const { verifySession } = require("../models/auth");
 const {csrfTokenMiddleware} = require("../models/csrf");
 const { RateLimiterMemory, BurstyRateLimiter} = require("rate-limiter-flexible");
 const dots = require("../views/dots");
+const pinoHttp  = require('pino-http');
 
 
 
@@ -16,7 +17,7 @@ router.use(bodyParser.json());
 router.use(cookieParser());
 router.use(bodyParser.urlencoded({ extended: true }));
 // HTTPS logging
-router.use(morgan('combined'))
+router.use(pinoHttp('combined'))
 
 // timing attack mitigations
 

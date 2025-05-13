@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const {query} = require('../db/db');
 const argon2 = require('argon2');
+const logger = require('./logger');
 
 // Reason - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
 const argon_opts = {
@@ -48,7 +49,7 @@ async function registerUser(username, password) {
                      VALUES ($1, $2, $3, $4)`, [username, hash, false, false]);
         return true
     } catch (error) {
-        console.error("Error during user registration:", error);
+        logger.error("Error during user registration:", error);
         return false
     }
 }
@@ -63,7 +64,7 @@ async function loginUser(username, password) {
         const valid = await argon2.verify(user.hashed_password, password, argon_opts);
         return valid ? user : null; // added to return the user object 
     } catch (error) {
-        console.error("Error during user login:", error);
+        logger.error("Error during user login:", error);
         return null;
     }
 }
@@ -83,12 +84,12 @@ async function verifySession(req, res, next) {
             isVerified: session.isverified,
             csrfToken: session.csrf_token
         }
-        console.log(session)
+        logger.info(session)
         await updateSessionToNow(token)
         next()
     } catch (error) {
         // session shouldn't be set if there is an error since it is set at the end
-        console.error('Session middleware error:', error);
+        logger.error('Session middleware error:', error);
         next()
     }
 }

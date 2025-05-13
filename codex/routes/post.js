@@ -5,6 +5,8 @@ const path = require('path');
 const {objectIsEmpty} = require('../models/util')
 let dots = require("../views/dots")
 const multer = require('multer');
+const logger = require('../models/logger');
+const { log } = require('console');
 
 // for file upload 
 const upload = multer({
@@ -31,13 +33,13 @@ router.get('/blog/:postId', async (req, res) => {
             `SELECT content, title, created, created_by FROM posts WHERE id=$1`, [req.params.postId]    
         );
     if (data.rows.length === 1) {
-        console.log("asdfsadfsafsadfsdffsdafsdfdsafds",data.rows.content);
+        logger.info("asdfsadfsafsadfsdffsdafsdfdsafds",data.rows.content);
         res.send(dots.post({csrf: req.csrfToken(), post: await json.stringify(data.rows)}))
     } else {
         res.status(404).send(dots.message({csrf: req.csrfToken(), message: "Post Doesn't Exist"}))
     }
 } catch (err) {
-    console.error('Error with getting post', err);
+    logger.error('Error with getting post', err);
     res.status(400).send(dots.message({csrf: req.csrfToken(), message: "Bad Request"}))
 }
     
@@ -55,7 +57,7 @@ router.get('/create-post', (req, res) => {
 
 // get posts from database
 router.get('/get-posts', async (req, res) => {
-    console.log(req.headers);
+    logger.info(req.headers);
     const name = req.query.name;
     const amount = req.query.amount;
     try {
@@ -63,7 +65,7 @@ router.get('/get-posts', async (req, res) => {
         const result = await query('SELECT posts.id, title, category, image_url, username FROM posts INNER JOIN users on posts.created_by = users.id WHERE title ILIKE $1 ORDER BY "created" DESC LIMIT $2', [`%${name}%`, amount]);
         res.json(result.rows);
     } catch (error) {
-        console.error('Error fetching posts:', error);
+        logger.error('Error fetching posts:', error);
         // should be bad
         res.status(500).json({error: error.message});
     }
@@ -81,8 +83,8 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
     const basePort = process.env.UPLOADS_PORT;
     const uploadsSecret = process.env.UPLOADS_SECRET;
 
-    console.log(req.body);
-    console.log(req.file)
+    logger.info(req.body);
+    logger.info(req.file)
 
     // get the data from the form
     if (!title || !category || !content || !req.file) {
@@ -97,9 +99,9 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
 
     try {
         let formData = new FormData();
-        console.log(typeof req.file.buffer)
+        logger.info(typeof req.file.buffer)
         formData.append("image", new File([new Uint8Array(req.file.buffer)], req.file.originalname, { type: 'image/jpeg' }));
-        console.log(Object.fromEntries(formData));
+        logger.info(Object.fromEntries(formData));
         const uploadURLRes = await fetch(`http://${baseIP}:${basePort}/upload`, {
             method: 'POST',
             headers: {
@@ -108,19 +110,19 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
             body: formData
         });
 
-        console.log(uploadURLRes);
+        logger.info(uploadURLRes);
 
         if (!uploadURLRes.ok) {
-            console.error('Upload service error:', uploadURLRes.status, await uploadURLRes.text());
+            logger.error('Upload service error:', uploadURLRes.status, await uploadURLRes.text());
             return res.status(uploadURLRes.status).send('Image upload failed.');
         }
 
         const {path} = await uploadURLRes.json();
-        console.log(path);
+        logger.info(path);
         // imageUrl = `http://${baseIP}.localhost/${path}`;
         imageUrl = `${path}`;
     } catch (err) {
-        console.error('Error calling uploads service:', err);
+        logger.error('Error calling uploads service:', err);
         return res.status(502).send('Image upload failed.');
     }
     // const url = await fetch("https://uploads:3001/uploads")
@@ -135,7 +137,7 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
         // alert("Successfully created post");
         res.redirect('/');
     } catch (err) {
-        console.error('Create Post Error:', err);
+        logger.error('Create Post Error:', err);
         res.status(500).send('Could not create post.');
     }
 });

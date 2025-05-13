@@ -3,9 +3,11 @@ const app = express()
 const port = 3001
 const multer = require('multer');
 const path = require('path');
+const logger = require('./models/logger');
+const { log } = require('console');
 
 app.get('/', (req, res) => {
-  console.log('test');
+  logger.info('test');
   res.send('Hello World!')
 })
 
@@ -74,5 +76,5 @@ app.use("/images", express.static(path.join(__dirname, 'public', 'images')));
 
 
 app.listen(port, () => {
-  console.log(`app listening on port ${port}`)
+  logger.info(`app listening on port ${port}`)
 })

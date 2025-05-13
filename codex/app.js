@@ -5,6 +5,11 @@ const port = 3000
 const dots = require('./views/dots');
 const QRCode = require('qrcode');
 const speakeasy = require('speakeasy');
+const pinoHttp  = require('pino-http');
+const logger = require('./models/logger');
+
+// pino for log
+app.use(pinoHttp({ logger }));
 
 
 /* Import Routes */
@@ -28,17 +33,17 @@ app.use('/public', pub);
 app.use((req, res) => {
     res.status(404).send(dots.message({message: "404: Page Not Found"}));
 });
-// Start the server
+
 const server = app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    logger.info(`Server running on http://localhost:${port}`);
 });
 
 // Reason - https://cheatsheetseries.owasp.org/cheatsheets/NodeJS_Docker_Cheat_Sheet.html#6-graceful-tear-down-for-your-nodejs-web-applications
 async function closeGraceful(signal) {
-    console.log(`Received signal to terminate: ${signal}`)
+    logger.info(`Received signal to terminate: ${signal}`)
 
     await server.close(() => {
-        console.log("Server terminated.");
+        logger.info("Server terminated.");
         process.exit(0);
     });
 }

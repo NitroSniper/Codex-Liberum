@@ -8,6 +8,7 @@ const {timingMitigationMiddleware} = require("./middleware");
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const { query } = require('../db/db');
+const logger = require('../models/logger');
 
 const minLength = 8;
 
@@ -75,7 +76,7 @@ router.post('/login', timingMitigationMiddleware, async (req, res) => {
             redirectTo: '/auth/setup-2fa' // redirect to setup
         });
     } catch (error) {
-        console.error('Login error:', error);
+        logger.error('Login error:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
@@ -93,7 +94,7 @@ router.get('/setup-2fa', async (req, res) => {
     // generate QR code image as a data URL
     QRCode.toDataURL(secret.otpauth_url, (err, dataUrl) => {
         if (err) {
-            console.error('QR Code generation error:', err);
+            logger.error('QR Code generation error:', err);
             return res.status(500).send('Failed to generate QR code');
         }
         // to render the setup2fa.dot template with the QR code image
@@ -107,16 +108,16 @@ router.get('/setup-2fa', async (req, res) => {
 
 /* POST setup 2FA page */
 router.post('/setup-2fa', async (req, res) => {
-    console.log('POST /setup-2fa hit');
+    logger.info('POST /setup-2fa hit');
     const { token } = req.body;
     const userId = req.session.userID;
     const { two_factor_temp_secret: tempSecret } = (await query(`SELECT two_factor_temp_secret FROM users WHERE id = $1`, [userId])).rows[0] || {};
 
     // For testing 
-    console.log('2fa:');
-    console.log('Temporary secret:', tempSecret);
-    console.log('User entered token:', token);
-    console.log('Server expects:', speakeasy.totp({secret: tempSecret, encoding: 'base32'}));
+    logger.info('2fa:');
+    logger.info('Temporary secret:', tempSecret);
+    logger.info('User entered token:', token);
+    logger.info('Server expects:', speakeasy.totp({secret: tempSecret, encoding: 'base32'}));
 
     const verified = speakeasy.totp.verify({
         secret: tempSecret, 
@@ -138,7 +139,7 @@ router.post('/setup-2fa', async (req, res) => {
     });
     QRCode.toDataURL(otpauthURL, (err, qrDataUrl) => {
         if (err) {
-            console.error('Error regenerating QR:', err);
+            logger.error('Error regenerating QR:', err);
             return res.status(500).send('Failed to generate QR code');
         }
         // render setup page with error, QR, and secret
@@ -157,7 +158,7 @@ router.get('/verify-2fa', (req, res) => {
     if (!req.cookies.pending_2fa) {
         return res.redirect('login');
     }
-    console.log('CSRF token:', req.csrfToken()); 
+    logger.info('CSRF token:', req.csrfToken()); 
     res.send(dots.verify2factor({ csrf: req.csrfToken() }));
 });
 
@@ -219,7 +220,7 @@ router.post('/register', timingMitigationMiddleware, async (req, res) => {
             res.status(400).json({message: genericMessage});
         }
     } catch (error) {
-        console.error('Error during registration:', error);
+        logger.error('Error during registration:', error);
         res.status(500).json({message: 'Internal Server Error'});
     }
 });
@@ -232,7 +233,7 @@ router.post('/logout', async (req, res) => {
         res.clearCookie('session_token');
         res.json({message: 'You have logged out successfully!'});
     } catch (error) {
-        console.error('Error during logout:', error);
+        logger.error('Error during logout:', error);
         res.status(500).json({message: 'Internal Server Error'});
     }
 });

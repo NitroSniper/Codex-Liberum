@@ -5,8 +5,9 @@ const {query} = require('../db/db')
 const {randomBytes} = require("crypto");
 const dots = require("../views/dots");
 const {objectIsEmpty} = require("./util");
+const logger = require('./logger');
 
-console.log(randomBytes(128).toString("base64"));
+logger.info(randomBytes(128).toString("base64"));
 
 const ignoredMethods = [
     "GET", "HEAD", "OPTIONS"
@@ -38,8 +39,8 @@ function storeTokenInState(req, csrf_token) {
 
 function csrfTokenMiddleware(req, res, next) {
     req.csrfToken = (overwrite) => generateToken(req, overwrite);
-    console.log(req.headers);
-    console.log("Key:",getTokenFromRequest(req), "Value:", getTokenFromState(req) );
+    logger.info(req.headers);
+    logger.info("Key:",getTokenFromRequest(req), "Value:", getTokenFromState(req) );
     if (!requiresCSRFProtection(req)) {
         // if request doesn't need protection
         next();
