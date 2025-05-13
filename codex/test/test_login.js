@@ -1,63 +1,106 @@
 // chai using expect() style - https://mochajs.org (Mocha Documentation)
 const { expect } = require('chai');
+
+// Setting the environment variable before loading the module
+process.env.ARGON_PEPPER = 'test_pepper';
+
+// Loading the dependencies for testing - db & argon2
 const db = require('../db/db');
-const auth = require('../models/auth');
+const argon2 = require('argon2');
 
-// Tests for loginUser function
-describe('loginUser()', function () {
-    let originalQuery;
+// Test for loginUser() function
+describe('loginUser() tests', () => {
+  let originalQuery, originalVerify;
 
-    before(function () {
-        // Saving originals to restore after
-        originalQuery = db.pool.query;
-    });
+  // Backs up the original implementation before running tests
+  before(() => {
+    originalQuery = db.query;
+    originalVerify = argon2.verify;
+  });
 
-    after(function () {
-        // Restore after tests back to the original
-        db.pool.query = originalQuery;
-    });
+  // Restoring the original implementation after the tests have finished
+  after(() => {
+    db.query = originalQuery;
+    argon2.verify = originalVerify;
+  });
 
-    it('should reject when user does not exist', async function () {
-        // Simulate no matching user in DB
-        db.pool.query = () => Promise.resolve({ rows: [] });
+  // Test 1: Valid user with correct password
+  it('returns user object when username and password are valid', async () => {
+    const fakeUser = {
+      id: 1,
+      username: 'joe',
+      hashed_password: 'HASHED',
+      ismoderator: false,
+      isverified: true,
+      two_factor_enabled: false,
+      two_factor_secret: null
+    };
 
-        const result = await auth.loginUser('nonexistent', 'anyPassword');
-        expect(result).to.be.an('object');
-        expect(result).to.have.property('success', false);
-        expect(result).to.have.property('message').that.matches(/invalid username or password/i);
-        expect(result).to.not.have.property('userId');
-        expect(result).to.not.have.property('ismoderator');
-    });
+    // Fake db.query to simulate finding the user
+    db.query = async () => ({ rows: [fakeUser] });
 
-    it('should reject when password is incorrect', async function () {
-        // Fake user record with known salt, hash, and moderator flag
-        const salt = 'testSalt';
-        const correctHash = auth.hashPassword('correctPassword', salt);
-        const fakeUser = { id: 1, salt, hashed_password: correctHash, ismoderator: false };
+    // Fake argon2.verify to simulate correct password
+    argon2.verify = async () => true;
 
-        db.pool.query = () => Promise.resolve({ rows: [fakeUser] });
+    // To clear cache and re-import auth
+    delete require.cache[require.resolve('../models/auth')];
+    const auth = require('../models/auth');
 
-        const result = await auth.loginUser('testUser', 'wrongPassword');
-        expect(result).to.be.an('object');
-        expect(result).to.have.property('success', false);
-        expect(result).to.have.property('message').that.matches(/invalid username or password/i);
-        expect(result).to.not.have.property('userId');
-        expect(result).to.not.have.property('ismoderator');
-    });
+    // Call loginUser and expect the correct user object
+    const result = await auth.loginUser('joe', 'password');
+    expect(result).to.deep.equal(fakeUser);
+  });
 
-    it('should succeed with correct credentials and return userId and role', async function () {
-        // Fake user record matching the login attempt
-        const salt = 'anotherSalt';
-        const correctHash = auth.hashPassword('rightPassword', salt);
-        const fakeUser = { id: 2, salt, hashed_password: correctHash, ismoderator: true };
+  // Test 2: User not found
+  it('returns null when no user is found', async () => {
+    // Fake db.query to simulate no results
+    db.query = async () => ({ rows: [] });
+    argon2.verify = async () => true; // shouldn't be called
 
-        db.pool.query = () => Promise.resolve({ rows: [fakeUser] });
+    // Re-import with fakes active
+    delete require.cache[require.resolve('../models/auth')];
+    const auth = require('../models/auth');
 
-        const result = await auth.loginUser('anotherUser', 'rightPassword');
-        expect(result).to.be.an('object');
-        expect(result).to.have.property('success', true);
-        expect(result).to.have.property('message', 'Login successful!');
-        expect(result).to.have.property('userId', 2);
-        expect(result).to.have.property('ismoderator', true);
-    });
+    const result = await auth.loginUser('nouser', 'password');
+    expect(result).to.be.null;
+  });
+
+  // Test 3: Password is incorrect
+  it('returns null when password is invalid', async () => {
+    const fakeUser = {
+      id: 1,
+      username: 'joe',
+      hashed_password: 'HASHED',
+      ismoderator: false,
+      isverified: true,
+      two_factor_enabled: false,
+      two_factor_secret: null
+    };
+
+    // Fake db.query to simulate user being found
+    db.query = async () => ({ rows: [fakeUser] });
+
+    // Fake argon2.verify to simulate wrong password
+    argon2.verify = async () => false;
+
+    delete require.cache[require.resolve('../models/auth')];
+    const auth = require('../models/auth');
+
+    const result = await auth.loginUser('joe', 'wrongpass');
+    expect(result).to.be.null;
+  });
+
+  // Test 4: If database query fails (throws error)
+  it('returns null on DB error', async () => {
+
+    // Simulate fake throwing an error
+    db.query = async () => { throw new Error('DB fail'); };
+    argon2.verify = async () => true; // shouldn't be reached
+
+    delete require.cache[require.resolve('../models/auth')];
+    const auth = require('../models/auth');
+
+    const result = await auth.loginUser('joe', 'password');
+    expect(result).to.be.null;
+  });
 });

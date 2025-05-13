@@ -1,71 +1,137 @@
 // chai using expect() style - https://mochajs.org (Mocha Documentation)
 const { expect } = require('chai');
-const db = require('../db/db');
-const sessionMod = require('../models/session');
-const crypto = require('crypto');
-const auth = require('../models/auth');
 
-// Tests for session DB functions
-describe('Session DB functions', () => {
-    let originalRandomBytes, originalQuery;
+// Setting the environment variable before loading the module
+process.env.ARGON_PEPPER = 'test_pepper';
 
-    before(() => {
-        // Saving originals to restore after
-        originalRandomBytes = crypto.randomBytes;
-        originalQuery = db.pool.query;
+// Loading the dependencies for testing - sessions
+const sessionStore = require('../models/session');
+
+// Test for verifySession() function
+describe('verifySession() tests', () => {
+  let originalGetSession, originalUpdateSession;
+
+  // Backs up the original implementation before running tests
+  before(() => {
+    originalGetSession = sessionStore.getSession;
+    originalUpdateSession = sessionStore.updateSessionToNow;
+  });
+
+  // Restoring the original implementation after the tests have finished
+  after(() => {
+    sessionStore.getSession = originalGetSession;
+    sessionStore.updateSessionToNow = originalUpdateSession;
+  });
+
+  // Test 1: Should skip session setup when no cookies exist
+  it('skips when no cookies are present', async () => {
+    const req = { cookies: undefined }; // Simulate request with no cookies
+    const res = {};
+    let nextCalled = false;
+    const next = () => { nextCalled = true; };
+
+    // Stub session functions (should not be called in this case)
+    sessionStore.getSession = async () => { throw new Error('should not be called'); };
+    sessionStore.updateSessionToNow = async () => { };
+
+    // Clear auth module from cache to reload with new stubs
+    delete require.cache[require.resolve('../models/auth')];
+    const auth = require('../models/auth');
+
+    // Call verifySession
+    await auth.verifySession(req, res, next);
+    // Expect next() was called and session remains empty
+    expect(nextCalled).to.be.true;
+    expect(req.session).to.deep.equal({});
+  });
+
+  // Test 2: Should skip session setup when token is invalid - not found in DB
+  it('skips when session token is invalid', async () => {
+    const req = { cookies: { session_token: 'bad-token' } }; // Simulate bad token
+    const res = {};
+    let nextCalled = false;
+    const next = () => { nextCalled = true; };
+
+    // Simulate getSession returning null for invalid token
+    sessionStore.getSession = async () => null;
+    sessionStore.updateSessionToNow = async () => { };
+
+    delete require.cache[require.resolve('../models/auth')];
+    const auth = require('../models/auth');
+
+    await auth.verifySession(req, res, next);
+    expect(nextCalled).to.be.true;
+    expect(req.session).to.deep.equal({});
+  });
+
+  // Test 3: Should populate req.session correctly with a valid session token
+  it('populates req.session with valid token', async () => {
+    // Simulated session data returned from DB
+    const sessionData = {
+      user_id: 1,
+      ismoderator: true,
+      isverified: false,
+      csrf_token: 'abc123'
+    };
+
+    // Simulated request with a valid session token
+    const req = { cookies: { session_token: 'good-token' } };
+    const res = {};
+    let nextCalled = false;
+    const next = () => { nextCalled = true; };
+
+    // Stub getSession to return mock session data
+    sessionStore.getSession = async (token) => {
+      expect(token).to.equal('good-token'); // Validate token passed in
+      return sessionData;
+    };
+
+    // Track whether updateSessionToNow is called with correct token
+    let updateCalled = false;
+    sessionStore.updateSessionToNow = async (token) => {
+      updateCalled = token === 'good-token';
+    };
+
+    delete require.cache[require.resolve('../models/auth')];
+    const auth = require('../models/auth');
+
+    // Call verifySession with valid token
+    await auth.verifySession(req, res, next);
+    // Expect next() was called
+    expect(nextCalled).to.be.true;
+    // Expect updateSessionToNow was triggered with valid token
+    expect(updateCalled).to.be.true;
+    // Expect session object is populated correctly
+    expect(req.session).to.include({
+      token: 'good-token',
+      userID: 1,
+      isModerator: true,
+      isVerified: false,
+      csrfToken: 'abc123'
     });
+  });
 
-    after(() => {
-        // Restore back to original
-        crypto.randomBytes = originalRandomBytes;
-        db.pool.query = originalQuery;
-    });
+  // Test 4: Should still call next and not crash even if getSession throws an error
+  it('still calls next and does not throw if getSession throws', async () => {
+    const req = { cookies: { session_token: 'error-token' } }; // Simulated token that will cause error
+    const res = {};
+    let nextCalled = false;
+    const next = () => { nextCalled = true; };
 
-    // createSession() function test
-    describe('createSession()', () => {
-        it('Returns a predictable token and future expiresAt', async () => {
-            // Stub randomBytes for predictable token 
-            // Random 16 byte hex used
-            crypto.randomBytes = () => Buffer.from('00112233445566778899aabbccddeeff', 'hex');
+    // Simulate getSession throwing a DB error
+    sessionStore.getSession = async () => {
+      throw new Error('Simulated session DB error');
+    };
 
-            let lastParams;
-            // Stub pool.query to capture the params
-            db.pool.query = (sql, params) => { lastParams = params; return Promise.resolve(); };
+    sessionStore.updateSessionToNow = async () => { };
 
-            // Record the time before calling createSession function
-            const before = Date.now();
-            const { token, expiresAt } = await sessionMod.createSession(5);
+    delete require.cache[require.resolve('../models/auth')];
 
-            // Token should match stubbed bytes
-            // Random 16 byte hex used
-            expect(token).to.equal('00112233445566778899aabbccddeeff');
-            // DB insert params: [userId, token, now, expiresAt]
-            expect(lastParams[0]).to.equal(5);
-            expect(lastParams[1]).to.equal(token);
-            expect(lastParams[2]).to.be.instanceOf(Date);
-            expect(lastParams[3]).to.be.instanceOf(Date);
-            // expiresAt timestamp is 1min in the future
-            expect(expiresAt.getTime()).to.be.within(before + 50000, before + 70000);
-        });
-    });
+    // Call verifySession (should catch error internally and still call next)
+    const auth = require('../models/auth');
 
-    // getSession() function test 
-    describe('getSession()', () => {
-        it('Returns the first row from the sesh table', async () => {
-            // Prepare a fake session row to be returned by the stub
-            const row = { foo: 1 };
-            db.pool.query = () => Promise.resolve({ rows: [row] });
-            expect(await sessionMod.getSession('x')).to.equal(row);
-        });
-    });
-
-    // getUserById() function test
-    describe('getUserById()', () => {
-        it('Returns the first row from the users table', async () => {
-            // Simulate the DB returning one user record
-            const row = { id: 3, username: 'user' };
-            db.pool.query = () => Promise.resolve({ rows: [row] });
-            expect(await auth.getUserById(3)).to.equal(row);
-        });
-    });
+    await auth.verifySession(req, res, next);
+    expect(nextCalled).to.be.true;
+    expect(req.session).to.deep.equal({});
+  });
 });
