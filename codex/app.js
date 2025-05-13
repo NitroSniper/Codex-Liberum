@@ -16,8 +16,6 @@ const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 const getPostRouter = require('./routes/post');
 app.use('/post', getPostRouter)
-const donateRouter = require('./routes/donate');
-app.use('/donate', donateRouter);
 const moderatorRoutes = require('./routes/moderator');
 app.use('/moderator', moderatorRoutes);
 const authentication = require('./routes/authentication');
