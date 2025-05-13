@@ -18,6 +18,7 @@ const setupBlock = document.getElementById('setup2faFormBlock');
 const verifyBlock = document.getElementById('verify2faFormBlock');
 const verifyButton = document.getElementById('verifyButton');
 const logoutLink = document.getElementById('logoutLink');
+const moderatorPostList = document.getElementById('postListContainer');
 
 
 
@@ -240,13 +241,55 @@ function post(formData) {
         headers: imageHeader,
         body: formData,
     }).then((res) => {
-       if (res.ok) {
-           alert("Successfully created post");
-           window.location.href = '/';
-       } else {
-           alert("Failed to create post");
-       }
+        if (res.ok) {
+            alert("Successfully created post");
+            window.location.href = '/';
+        } else {
+            alert("Failed to create post");
+        }
     })
+}
+
+// for delete post
+async function fetchPosts() {
+    const res = await fetch('/moderator/posts', {
+        headers: fetchDefaultHeaders,
+    });
+    if (!res.ok) throw new Error(await res.text());
+
+    const posts = await res.json();               
+    console.log('POSTS JSON:', posts);            
+    moderatorPostList.innerHTML = _(
+        window.render.moderatorPostList({ posts: posts, length: posts.length })
+    );
+}
+
+async function deletePosts(formData) {
+    // map with post id
+    const postIds = Array.from(formData.keys()).map(id => Number(id));
+    if (postIds.length === 0) {
+        alert('Please select at least one post to delete.');
+        return;
+    }
+    // confirm
+    if (!confirm('Want to delete the selected posts?')) return; 
+
+    try {
+        const res = await fetch('/moderator/delete-posts', {
+            method: 'POST',
+            headers: fetchDefaultHeaders,
+            body: JSON.stringify({ postIds })
+        });
+        if (res.ok) {
+            alert('Posts deleted!');
+            return location.reload();
+        }
+        const data = await res.json();
+        alert('Failed: ' + data.message);
+    } catch (err) {
+        console.error(err);
+        alert('Server error.');
+    }
 }
 
 // decorate forms
@@ -257,6 +300,12 @@ const verify_user_form = ignore_form(verifyUsers)
 const post_form = ignore_form(post)
 const setup2fa_form = ignore_form(setup2FAForm);
 const verify2fa_form = ignore_form(verify2FAForm);
+const delete_posts_form = ignore_form(deletePosts);
+
+if (moderatorPostList) {
+    moderatorPostList.addEventListener('submit', delete_posts_form);
+    fetchPosts();
+}
 
 if (setup2faContainer) setup2faContainer.addEventListener('submit', setup2fa_form);
 if (verify2faContainer) verify2faContainer.addEventListener('submit', verify2fa_form);
@@ -270,3 +319,5 @@ if (postsContainer) fetch_thumbnails("", 4).then(r => {
 })
 
 if (moderatorUserList) fetchUnverifiedUsers().then(r => { })
+
+

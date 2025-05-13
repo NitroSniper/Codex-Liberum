@@ -4,6 +4,7 @@
     {{#def.head}}
     <title>Moderator Dashboard</title>
     <script type="text/javascript" src="/public/view/moderatorUserList.js"></script>
+    <script type="text/javascript" src="/public/view/moderatorPostList.js"></script>
 </head>
 <body> 
 
@@ -15,23 +16,24 @@
                 <li><i><small>Free for all</small></i></li>
             </ul>
         </a>
-        <ul>
-            <li>
-                <button href="/donate" class="secondary">Donate</button>
-            </li>
-        </ul>
     </nav>
 </header>
 
 <main class="container" style="max-width:500px">
     <h2>Moderator Dashboard</h2>
-    <p>
-        <strong>Welcome to Codex Liberum Moderator page <br></strong>
-        Here you can verify users to allow them to create posts
-    </p>
-    <form id="userListContainer" onsubmit="verify_user_form(event)">
-        <p>Loading unverified users...</p>
-    </form>
+    <section>
+        <p><strong>Welcome to Codex Liberum Moderator page <br></strong>
+        Here you can verify users to allow them to create posts</p>
+        <form id="userListContainer" onsubmit="verify_user_form(event)">
+            <p>Loading unverified users...</p>
+        </form>
+    </section>    
+    <section>
+        <h3>All Posts</h3>
+        <form id="postListContainer" onsubmit="delete_posts_form(event)">
+            <p>Loading posts...</p>
+        </form>
+    </section>
 </main>
 
 </body>

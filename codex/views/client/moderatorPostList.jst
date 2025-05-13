@@ -1,0 +1,20 @@
+{{? it.length }}
+  {{~ it.posts :post }}
+    <label>
+      <input type="checkbox" name="{{=post.id}}">
+      {{=post.title}}
+    </label>
+  {{~}}
+  {{? it.error}}
+    <button type="submit" aria-invalid="true">
+      Delete Selected Posts
+    </button>
+    <small>{{=it.error}}</small>
+  {{??}}
+    <button type="submit">
+      Delete Selected Posts
+    </button>
+  {{?}}
+{{??}}
+  <p>No posts available.</p>
+{{?}}
