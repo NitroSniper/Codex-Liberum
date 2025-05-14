@@ -1,6 +1,6 @@
-upload.ortin.dev {
+upload.localhost {
     reverse_proxy uploads:3001
 }
-liberum.ortin.dev {
+localhost {
     reverse_proxy codex:3000
 }

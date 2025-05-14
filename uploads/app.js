@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 
 app.use((req, res, next) => {
     res.set('Cross-Origin-Resource-Policy', 'same-origin');
-    res.set('Access-Control-Allow-Origin', 'https://liberum.ortin.dev');
+    res.set('Access-Control-Allow-Origin', 'https://localhost');
     next()
 });
 
@@ -57,7 +57,7 @@ app.post(
       return res.status(401).json({ error: 'Unauthorized' });
     }
     // const fileUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-    const fileUrl = `https://upload.ortin.dev/images/${req.file.filename}`;
+    const fileUrl = `https://upload.localhost/images/${req.file.filename}`;
     // res.json({ url: fileUrl });
     res.json({ path: `${fileUrl}` })
   }
