@@ -1,14 +1,15 @@
 const express = require('express');
-const path = require("path");
 const router = express.Router();
-const morgan = require('morgan');
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser")
 const { verifySession } = require("../models/auth");
 const {csrfTokenMiddleware} = require("../models/csrf");
 const { RateLimiterMemory, BurstyRateLimiter} = require("rate-limiter-flexible");
 const dots = require("../views/dots");
-const pinoHttp  = require('pino-http');
+const pino = require("../models/logger");
+const pinoHttp  = require('pino-http')({
+    logger: pino
+});
 
 
 
@@ -17,7 +18,7 @@ router.use(bodyParser.json());
 router.use(cookieParser());
 router.use(bodyParser.urlencoded({ extended: true }));
 // HTTPS logging
-router.use(pinoHttp('combined'))
+router.use(pinoHttp)
 
 // timing attack mitigations
 

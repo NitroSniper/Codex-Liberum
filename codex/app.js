@@ -3,14 +3,7 @@ const path = require('path');
 const app = express()
 const port = 3000
 const dots = require('./views/dots');
-const QRCode = require('qrcode');
-const speakeasy = require('speakeasy');
-const pinoHttp  = require('pino-http');
 const logger = require('./models/logger');
-
-// pino for log
-app.use(pinoHttp({ logger }));
-
 
 /* Import Routes */
 const { router: middlewareRouter }  = require('./routes/middleware');

@@ -4,8 +4,8 @@ services:
 #    ports: # use if it is necessary to expose the container to the host machine
 #      - "3000:3000"
     environment:
-      ARGON_PEPPER: secret_pepper
-      UPLOADS_SECRET: uploadsSecret
+      ARGON_PEPPER: 53580186397ea7a35849d26aef45173e
+      UPLOADS_SECRET: b141111300bc627437aad12eef698aa2ad3f53270124d2047f5fbf80747e2f12df14098ca0509e3a7f0d40d985a56b15c9db8a8904325f303bde2caf800defef6cf6ef23f821aa333478302e8a9a274d2d419328dc99ab98a14f8dcc44507e8f29bb3cb7774819c2255066cce19e571ae0e6b95aff471696f98e4a018d804180262f3df947615e2f57fe1e3d6ad10460dcfcf3cf17d04e297d8fac0d11a12f2b48e10c6d60d0c0567c35aa7957e8177cc907e2b5a6fbeb572e17f31f291883292926fdad1fc0c8822a45e172d7c1a2d4b1ff3357f836d6e5c096c38557551e7030e5ba33b395f476207de0cd86d8dd6a4aba953f94668ff7cbf08f02c1964d9abfb13b307c0d8c30aa169d43b9690d2137dda591382538542256f18ba90bb3ef21bb9e2b8765433846cab08a276b2ca6aaa53d7937cfda87d2cc6de45c5f9d1d8dafb88481cf8eb594403d4c54c6665d0256b1cebe5640c6eb157db906c29e1b4a6cde85b5c591a53fc1c995a05e8387ba61bfa858194b1f30b619fa6d4b882870309f4502cbc209859cd9aa6c388fea3f8fe49594992871aa588ca848f90082b89151207d76d79539980c2891356b50966a056cfef2ed42d35a48a2a1f1e36e413aba9890f13d0a6e79472f7f73408bbc09f42c5b912670f21af4c875889a7c03df91debc0a4da980267930eff70ad77327e548173f987d8ab67f84953f38ea
       UPLOADS_IP: uploads
       UPLOADS_PORT: 3001
     develop:
@@ -28,6 +28,9 @@ services:
           target: /usr/src/app/
           ignore:
             - node_modules/
+    volumes:
+      - uploads_public:/public
+  #      - caddy_data:/data
   db:
     image: postgres
     restart: always
@@ -41,7 +44,7 @@ services:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_USER: prod
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: i8Rar/yz8ThoJk+dK2ksog==
     volumes:
       - pg_data:/var/lib/postgresql/data
   adminer:
@@ -65,5 +68,6 @@ services:
 
 volumes:
   pg_data:
+  uploads_public:
 #  caddy_data:
 #  caddy_config:

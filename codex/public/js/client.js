@@ -19,6 +19,7 @@ const verifyBlock = document.getElementById('verify2faFormBlock');
 const verifyButton = document.getElementById('verifyButton');
 const logoutLink = document.getElementById('logoutLink');
 const moderatorPostList = document.getElementById('postListContainer');
+const blog = document.getElementById('blog');
 
 
 
@@ -35,6 +36,27 @@ async function populate_posts(formData) {
     await fetch_thumbnails(name, 4)
 }
 const _ = (html) => DOMPurify.sanitize(html);
+
+async function fetch_thumbnails(name, amount) {
+    const response = await fetch('/post/get-posts?' + new URLSearchParams({
+        name: name,
+        amount: amount,
+    }).toString(), {
+        headers: fetchDefaultHeaders
+    })
+    const posts = await response.json();
+    postsContainer.innerHTML = _(window.render.indexPost({ posts: posts }));
+}
+async function fetch_blog() {
+    const response = await fetch('/post/get-posts?' + new URLSearchParams({
+        name: document.title,
+        amount: 1,
+    }).toString(), {
+        headers: fetchDefaultHeaders
+    })
+    const post = await response.json();
+    blog.innerHTML = _(post[0].content);
+}
 
 async function fetch_thumbnails(name, amount) {
     const response = await fetch('/post/get-posts?' + new URLSearchParams({
@@ -304,7 +326,6 @@ const delete_posts_form = ignore_form(deletePosts);
 
 if (moderatorPostList) {
     moderatorPostList.addEventListener('submit', delete_posts_form);
-    fetchPosts();
 }
 
 if (setup2faContainer) setup2faContainer.addEventListener('submit', setup2fa_form);
@@ -317,6 +338,7 @@ if (logoutLink) logoutLink.addEventListener('click', (e) => {
 
 if (postsContainer) fetch_thumbnails("", 4).then(r => {
 })
+if (blog) fetch_blog().then(r => {}).then(r => {})
 
 if (moderatorUserList) fetchUnverifiedUsers().then(r => { })
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {{#def.head}}
-    <title>Error</title>
+    <title>{{=it.title}}</title>
 </head>
 <body>
 <header class="container">
@@ -17,7 +17,7 @@
     </nav>
 </header>
 <main class="container" style="max-width:500px">
-    {{=it.post.content}}
+    <article id="blog"></article>
 </main>
 </body>
 </html>

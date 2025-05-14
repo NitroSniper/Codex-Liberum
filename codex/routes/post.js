@@ -6,7 +6,6 @@ const {objectIsEmpty} = require('../models/util')
 let dots = require("../views/dots")
 const multer = require('multer');
 const logger = require('../models/logger');
-const { log } = require('console');
 
 // for file upload 
 const upload = multer({
@@ -28,21 +27,20 @@ const upload = multer({
 })
 
 router.get('/blog/:postId', async (req, res) => {
-    try{
+    try {
         const data = await query(
-            `SELECT content, title, created, created_by FROM posts WHERE id=$1`, [req.params.postId]    
+            `SELECT title FROM posts WHERE id = $1`, [req.params.postId]
         );
-    if (data.rows.length === 1) {
-        logger.info("asdfsadfsafsadfsdffsdafsdfdsafds",data.rows.content);
-        res.send(dots.post({csrf: req.csrfToken(), post: await json.stringify(data.rows)}))
-    } else {
-        res.status(404).send(dots.message({csrf: req.csrfToken(), message: "Post Doesn't Exist"}))
+        if (data.rows.length === 1) {
+            res.send(dots.post({csrf: req.csrfToken(), title: data.rows[0].title}));
+        } else {
+            res.status(404).send(dots.message({csrf: req.csrfToken(), message: "Post Doesn't Exist"}))
+        }
+    } catch (err) {
+        logger.error('Error with getting post', err);
+        res.status(400).send(dots.message({csrf: req.csrfToken(), message: "Bad Request"}))
     }
-} catch (err) {
-    logger.error('Error with getting post', err);
-    res.status(400).send(dots.message({csrf: req.csrfToken(), message: "Bad Request"}))
-}
-    
+
 });
 
 
@@ -62,7 +60,7 @@ router.get('/get-posts', async (req, res) => {
     const amount = req.query.amount;
     try {
         // const result = await query('SELECT title, username FROM posts INNER JOIN users on posts.created_by = users.id WHERE title LIKE $1 ORDER BY "created" DESC LIMIT $2', [`%${name}%`, amount]);
-        const result = await query('SELECT posts.id, title, category, image_url, username FROM posts INNER JOIN users on posts.created_by = users.id WHERE title ILIKE $1 ORDER BY "created" DESC LIMIT $2', [`%${name}%`, amount]);
+        const result = await query('SELECT posts.id, title, category, image_url, username, content FROM posts INNER JOIN users on posts.created_by = users.id WHERE title ILIKE $1 ORDER BY "created" DESC LIMIT $2', [`%${name}%`, amount]);
         res.json(result.rows);
     } catch (error) {
         logger.error('Error fetching posts:', error);
@@ -100,7 +98,7 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
     try {
         let formData = new FormData();
         logger.info(typeof req.file.buffer)
-        formData.append("image", new File([new Uint8Array(req.file.buffer)], req.file.originalname, { type: 'image/jpeg' }));
+        formData.append("image", new File([new Uint8Array(req.file.buffer)], req.file.originalname, {type: 'image/jpeg'}));
         logger.info(Object.fromEntries(formData));
         const uploadURLRes = await fetch(`http://${baseIP}:${basePort}/upload`, {
             method: 'POST',
@@ -132,7 +130,7 @@ router.post('/create-post', upload.single('photo'), async (req, res) => {
         await query(
             `INSERT INTO posts (title, category, content, image_url, created_by)
              VALUES ($1, $2, $3, $4, $5)`,
-            [title, category, content, imageUrl, createdBy]    
+            [title, category, content, imageUrl, createdBy]
         );
         // alert("Successfully created post");
         res.redirect('/');
