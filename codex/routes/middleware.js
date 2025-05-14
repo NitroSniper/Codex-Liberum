@@ -106,7 +106,7 @@ router.use((req, res, next) => {
     // Tells browsers to prefer HTTPS
     res.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
     // A powerful allow-list of what can happen on your page which mitigates many attacks
-    res.set('Content-Security-Policy', `default-src 'self'; base-uri 'self'; font-src 'self' https: data:; form-action 'self'; frame-ancestors 'self'; img-src 'self' *.localhost data:; object-src 'none'; script-src 'self'; script-src-attr 'unsafe-inline'; style-src 'self' https: 'unsafe-inline'; upgrade-insecure-requests`);
+    res.set('Content-Security-Policy', `default-src 'self'; base-uri 'self'; font-src 'self' https: data:; form-action 'self'; frame-ancestors 'self'; img-src 'self' *.localhost *.ortin.dev data:; object-src 'none'; script-src 'self'; script-src-attr 'unsafe-inline'; style-src 'self' https: 'unsafe-inline'; upgrade-insecure-requests`);
     // Indicate what origins are allowed to access the site
     res.set('Access-Control-Allow-Origin', 'https://localhost');
     // Helps process-isolate your page

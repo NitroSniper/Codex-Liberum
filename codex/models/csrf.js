@@ -7,7 +7,7 @@ const dots = require("../views/dots");
 const {objectIsEmpty} = require("./util");
 const logger = require('./logger');
 
-logger.info(randomBytes(128).toString("base64"));
+// logger.info(randomBytes(128).toString("base64"));
 
 const ignoredMethods = [
     "GET", "HEAD", "OPTIONS"

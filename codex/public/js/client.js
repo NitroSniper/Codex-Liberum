@@ -326,6 +326,7 @@ const delete_posts_form = ignore_form(deletePosts);
 
 if (moderatorPostList) {
     moderatorPostList.addEventListener('submit', delete_posts_form);
+    fetchPosts().then(r => {})
 }
 
 if (setup2faContainer) setup2faContainer.addEventListener('submit', setup2fa_form);

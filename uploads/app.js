@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 
 app.use((req, res, next) => {
     res.set('Cross-Origin-Resource-Policy', 'same-origin');
-    res.set('Access-Control-Allow-Origin', 'https://localhost');
+    res.set('Access-Control-Allow-Origin', 'https://liberum.ortin.dev');
     next()
 });
 
@@ -57,7 +57,7 @@ app.post(
       return res.status(401).json({ error: 'Unauthorized' });
     }
     // const fileUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-    const fileUrl = `https://uploads.localhost/images/${req.file.filename}`;
+    const fileUrl = `https://upload.ortin.dev/images/${req.file.filename}`;
     // res.json({ url: fileUrl });
     res.json({ path: `${fileUrl}` })
   }
@@ -75,6 +75,16 @@ app.use((err, _req, res, _next) => {
 app.use("/images", express.static(path.join(__dirname, 'public', 'images')));
 
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   logger.info(`app listening on port ${port}`)
 })
+
+// Reason - https://cheatsheetseries.owasp.org/cheatsheets/NodeJS_Docker_Cheat_Sheet.html#6-graceful-tear-down-for-your-nodejs-web-applications
+async function closeGraceful(signal) {
+    logger.info(`Received signal to terminate: ${signal}`)
+
+    await server.close(() => {
+        logger.info("Server terminated.");
+        process.exit(0);
+    });
+}

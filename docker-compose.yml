@@ -5,7 +5,7 @@ services:
 #      - "3000:3000"
     environment:
       ARGON_PEPPER: 53580186397ea7a35849d26aef45173e
-      UPLOADS_SECRET: b80f1182f9f9bf8721cd8f6961c4180347e044124d3c316c9071690212fefdf1e3b9b81f1531df8e73c4a7a0f0aab33c37544c381d9ef4d4a550575ee075303d5dfd2d410a1ac5ecd2274453bf7a6cc6c3f28bf10e6fc095e141a5ce9e6bd385b626a764f400f3762b62a02d837c6e8a9f901f2aebb2a77284507fa7bfd98a26
+      UPLOADS_SECRET: 4d24e834a71c6d24133e0ab21a6478b7a1035b4d9d400fcbcfc3067161bf18f9b190a79b02a6afad2445bcfbcea99ced9329fc843688d70e17855952bb0df9693282f38c6252d5739b5519d2a334d4370d4e212a93a1bb46270396e903119160521b9d412e50eac4dba8c50900d1e2e0cbe296242aa61f1e31ca759eb48edfc0
       UPLOADS_IP: uploads
       UPLOADS_PORT: 3001
       POSTGRES_USER: 1BOCVOblkJ
@@ -22,7 +22,7 @@ services:
 #    ports: # use if it is necessary to expose the container to the host machine
 #      - "3001:3001"
     environment:
-      UPLOADS_SECRET: uploadsSecret
+      UPLOADS_SECRET: 4d24e834a71c6d24133e0ab21a6478b7a1035b4d9d400fcbcfc3067161bf18f9b190a79b02a6afad2445bcfbcea99ced9329fc843688d70e17855952bb0df9693282f38c6252d5739b5519d2a334d4370d4e212a93a1bb46270396e903119160521b9d412e50eac4dba8c50900d1e2e0cbe296242aa61f1e31ca759eb48edfc0
     develop:
       watch:
         - action: sync+restart
@@ -65,11 +65,11 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./site:/srv
-#      - caddy_data:/data
-#      - caddy_config:/config
+      - caddy_data:/data
+      - caddy_config:/config
 
 volumes:
   pg_data:
   uploads_public:
-#  caddy_data:
-#  caddy_config:
+  caddy_data:
+  caddy_config:
