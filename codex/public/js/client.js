@@ -337,7 +337,7 @@ if (logoutLink) logoutLink.addEventListener('click', (e) => {
     logout(); // Submits the form
 });
 
-if (postsContainer) fetch_thumbnails("", 4).then(r => {
+if (postsContainer) fetch_thumbnails("", 50).then(r => {
 })
 if (blog) fetch_blog().then(r => {}).then(r => {})
 

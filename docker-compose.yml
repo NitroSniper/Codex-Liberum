@@ -31,7 +31,7 @@ services:
           ignore:
             - node_modules/
     volumes:
-      - uploads_public:/public
+      - uploads_public:/usr/src/app/public/images
   #      - caddy_data:/data
   db:
     image: postgres
