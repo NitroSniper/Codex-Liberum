@@ -4,10 +4,10 @@ const { Pool } = require("pg");
 const logger = require('../models/logger');
 
 const pool = new Pool({
-    user: 'prod',
+    user: process.env.POSTGRES_USER,
     host: 'db',
-    database: 'prod',
-    password: 'example',
+    database: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
     port: 5432,
 })
 
