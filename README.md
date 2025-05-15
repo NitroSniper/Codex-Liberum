@@ -2,11 +2,11 @@
 
 ## Services
 
-codex – Main application (accessible at https://localhost)
-upload – Upload service (accessible at https://upload.localhost)
-db – PostgreSQL database
-adminer (optional) – DB admin interface for testing (http://localhost:8080)
-caddy – Reverse proxy with HTTPS
+* codex – Main application (accessible at https://localhost)
+* upload – Upload service (accessible at https://upload.localhost)
+* db – PostgreSQL database
+* adminer (optional) – DB admin interface for testing (http://localhost:8080)
+* caddy – Reverse proxy with HTTPS
 
 ## Setup (Recommended)
 
